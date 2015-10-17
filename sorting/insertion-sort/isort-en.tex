@@ -79,7 +79,7 @@ given as the following.
 
 \begin{algorithmic}
 \Function{Sort}{$A$}
-  \State $X \gets \Phi$
+  \State $X \gets \phi$
   \For{each $x \in A$}
     \State \Call{Insert}{$X, x$}
   \EndFor
@@ -91,17 +91,17 @@ It's easy to express this process with folding, which we
 mentioned in the chapter of binary search tree.
 
 \be
-  insert = foldL \quad insert \quad \Phi
+  insert = foldL \quad insert \quad \phi
 \ee
 
 Note that in above algorithm, we store the sorted result in $X$,
 so this isn't in-place sorting. It's easy to change it to in-place
-algorithm.
+algorithm. Denote the sequence as $A = \{a_1, a_2, ..., a_n\}$.
 
 \begin{algorithmic}
 \Function{Sort}{$A$}
-  \For{$i \gets 2$ to \Call{Length}{$A$}}
-    \State insert $A_i$ to sorted sequence $\{A'_1, A'_2, ..., A'_{i-1} \}$
+  \For{$i \gets 2$ to $|A|$}
+    \State insert $a_i$ to sorted sequence $\{a'_1, a'_2, ..., a'_{i-1} \}$
   \EndFor
 \EndFunction
 \end{algorithmic}
@@ -125,8 +125,8 @@ be expressed as the following.
 sort(A) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & A = \Phi \\
-  insert(sort(\{A_2, A_3, ...\}), A_1) & otherwise
+  \phi & A = \phi \\
+  insert(sort(\{a_2, a_3, ...\}), a_1) & otherwise
   \end{array}
 \right.
 \ee
@@ -146,7 +146,7 @@ stored in plain array, it's necessary to scan from right to left.
 
 \begin{algorithmic}
 \Function{Sort}{$A$}
-  \For{$i \gets 2$ to \Call{Length}{$A$}}
+  \For{$i \gets 2$ to $|A|$}
     \Comment{Insert $A[i]$ to sorted sequence $A[1...i-1]$}
     \State $x \gets A[i]$
     \State $j \gets i-1$
@@ -162,7 +162,7 @@ stored in plain array, it's necessary to scan from right to left.
 One may think scan from left to right is natural. However, it isn't
 as effect as above algorithm for plain array. The reason is that, it's
 expensive to insert an element in arbitrary position in an array.
-As array stores elements continuously. If we want to insert new element
+As array stores elements continuously, if we want to insert new element
 $x$ in position $i$, we must shift all elements after $i$, including
 $i+1, i+2, ...$ one position to right. After that the cell at position $i$
 is empty, and we can put $x$ in it. This is illustrated in
@@ -170,7 +170,7 @@ figure \ref{fig:array-shift}.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.8]{img/array-shift.ps}
+  \includegraphics[scale=0.7]{img/array-shift.ps}
   \caption{Insert $x$ to array $A$ at position $i$.}
   \label{fig:array-shift}
 \end{figure}
@@ -180,9 +180,8 @@ first $i$ elements, then perform
 $n-i+1$ moves, and then insert $x$ to the $i$-th cell. So insertion
 from left to right need traverse the whole array anyway.
 While if we scan from right to
-left, we totally examine the last $j = n-i+1$ elements, and perform the same
-amount of moves. If $j$ is small (e.g. less than $n/2$), there is possibility
-to perform less operations than scan from left to right.
+left, we examine $i$ elements at most, and perform the same
+amount of moves.
 
 Translate the above algorithm to Python yields the following code.
 
@@ -225,7 +224,7 @@ void swap(Key* xs, int i, int j){
 
 So the ANSI C program presented above takes $3m$ times assignment, where $m$
 is the number of inner loops. While the pseudo code as well as the Python
-program use shift operation instead of swapping. There are $n+2$ times
+program use shift operation instead of swapping. There are $m+2$ times
 assignment.
 
 We can also provide \textproc{Insert}() function explicitly, and call it
@@ -266,7 +265,7 @@ The algorithm will be changed to call a binary search procedure.
 
 \begin{algorithmic}
 \Function{Sort}{$A$}
-  \For{$i \gets 2$ to \Call{Length}{$A$}}
+  \For{$i \gets 2$ to $|A|$}
     \State $x \gets A[i]$
     \State $p \gets $ \Call{Binary-Search}{$A[1...i-1], x$}
     \For{$j \gets i$ down to $p$}
@@ -292,12 +291,12 @@ $O(\lg n)$ time to locate the insertion position.
 \begin{algorithmic}
 \Function{Binary-Search}{$A, x$}
   \State $l \gets 1$
-  \State $u \gets 1+$ \Call{Length}{$A$}
+  \State $u \gets 1+|A|$
   \While{$l < u$}
     \State $m \gets \lfloor \frac{l+u}{2} \rfloor$
-    \If{$A_m = x$}
+    \If{$A[m] = x$}
       \State \Return $m$ \Comment{Find a duplicated element}
-    \ElsIf{$A_m < x$}
+    \ElsIf{$A[m] < x$}
       \State $l \gets m+1$
     \Else
       \State $u \gets m$
@@ -362,9 +361,9 @@ It can improve the insertion operation from $O(n)$ to constant time $O(1)$.
   insert(A, x) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \{ x \} & A = \Phi \\
-  \{ x \} \cup A & x < A_1 \\
-  \{ A_1 \} \cup insert(\{ A_2, A_3, ... A_n\}, x)& otherwise
+  \{ x \} & A = \phi \\
+  \{ x \} \cup A & x < a_1 \\
+  \{ a_1 \} \cup insert(\{ a_2, a_3, ... a_n\}, x)& otherwise
   \end{array}
 \right.
 \ee
@@ -373,7 +372,6 @@ Translating the algorithm to Haskell yields the below program.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-insert :: (Ord a) => [a] -> a -> [a]
 insert [] x = [x]
 insert (y:ys) x = if x < y then x:y:ys else y:insert ys x
 \end{lstlisting}
@@ -398,14 +396,14 @@ $x$, and \textproc{Next}($x$) accesses the next node in the linked-list.
 
 \begin{algorithmic}
 \Function{Insert}{$L, x$}
-  \State $p \gets NIL$
+  \State $p \gets$ NIL
   \State $H \gets L$
-  \While{$L \neq NIL \land $ \Call{Key}{$L$} $<$ \Call{Key}{$x$}}
+  \While{$L \neq$ NIL $\land $ \Call{Key}{$L$} $<$ \Call{Key}{$x$}}
     \State $p \gets L$
     \State $L \gets $ \Call{Next}{$L$}
   \EndWhile
   \State \Call{Next}{$x$} $\gets L$
-  \If{$p \neq NIL$}
+  \If{$p \neq$ NIL}
     \State $H \gets x$
   \Else
     \State \Call{Next}{$p$} $\gets x$
@@ -442,19 +440,19 @@ struct node* insert(struct node* lst, struct node* x){
 
 Instead of using explicit linked-list such as by pointer or reference
 based structure. Linked-list can also be realized by another index array.
-For any array element $A_i$, $Next_i$ stores the index of next element
-follows $A_i$. It means $A_{Next_i}$ is the next element after $A_i$.
+For any array element $A[i]$, $Next[i]$ stores the index of next element
+follows $A[i]$. It means $A[Next[i]]$ is the next element after $A[i]$.
 
 The insertion algorithm based on this solution is given like below.
 
 \begin{algorithmic}
 \Function{Insert}{$A, Next, i$}
   \State $j \gets \perp$
-  \While{$Next_j \neq NIL \land A_{Next_j} < A_i$}
-    \State $j \gets Next_j$
+  \While{$Next[j] \neq$ NIL $\land A[Next[j]] < A[i]$}
+    \State $j \gets Next[j]$
   \EndWhile
-  \State $Next_i \gets Next_j$
-  \State $Next_j \gets i$
+  \State $Next[i] \gets Next[j]$
+  \State $Next[j] \gets i$
 \EndFunction
 \end{algorithmic}
 
@@ -510,14 +508,14 @@ plain array.
 
 This remind us about our 'hello world' data structure, binary search tree.
 It naturally support binary search from its definition. At the same time,
-We can insert a new leaf in binary search tree in $O(1)$ constant time
+We can insert a new node in binary search tree in $O(1)$ constant time
 if we already find the location.
 
 So the algorithm changes to this.
 
 \begin{algorithmic}
 \Function{Sort}{$A$}
-  \State $T \gets \Phi$
+  \State $T \gets \phi$
   \For{each $x \in A$}
     \State $T \gets $ \Call{Insert-Tree}{$T, x$}
   \EndFor

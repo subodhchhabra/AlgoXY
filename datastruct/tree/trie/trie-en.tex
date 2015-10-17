@@ -22,7 +22,7 @@
 %                 COVER PAGE
 % ================================================================
 
-\title{Trie and Patricia}
+\title{Radix tree, Trie and Patricia}
 
 \author{Larry~LIU~Xinyu
 \thanks{{\bfseries Larry LIU Xinyu } \newline
@@ -32,10 +32,10 @@
 \maketitle
 \fi
 
-\markboth{Trie and Patricia}{Elementary algorithms}
+\markboth{Radix tree, Trie and Patricia}{Elementary algorithms}
 
 \ifx\wholebook\relax
-\chapter{Trie and Patricia}
+\chapter{Radix tree, Trie and Patricia}
 \numberwithin{Exercise}{chapter}
 \fi
 
@@ -51,7 +51,7 @@
 
 The binary trees introduced so far store information in nodes. It's
 possible to store the information in edges.
-Trie and Patricia are important data structures in
+Radix trees like Trie and Patricia are important data structures in
 information retrieving and manipulating.
 They were invented in 1960s. And are widely used in
 compiler design\cite{okasaki-int-map}, and bio-information area, such as
@@ -59,7 +59,7 @@ DNA pattern matching \cite{wiki-suffix-tree}.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.5]{img/radix-tree.ps}
+  \includegraphics[scale=0.4]{img/radix-tree.ps}
   \caption{Radix tree.} \label{fig:radix-tree}
 \end{figure}
 
@@ -87,11 +87,10 @@ most programming environment.
 \index{Integer trie}
 
 The data structure shown in figure \ref{fig:radix-tree} is
-called as \emph{binary trie}.
+often called as \emph{binary trie}.
 Trie is invented by Edward Fredkin. It comes from ``retrieval'', pronounce
 as /'tri:/ by the inventor, while it is pronounced /'trai/ ``try''
-by other authors \cite{wiki-trie}. Trie is also called prefix tree or
-radix tree.
+by other authors \cite{wiki-trie}. Trie is also called prefix tree.
 A binary
 trie is a special binary tree in which the placement of each key is controlled by
 its bits, each 0 means ``go left'' and each 1 means ``go
@@ -111,8 +110,8 @@ turn into integers. Where should we insert decimal 3, for example, to the trie?
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.5]{img/big-endian-trie.ps}
-  \caption{a big-endian trie} \label{fig:big-endian-trie}
+  \includegraphics[scale=0.4]{img/big-endian-trie.ps}
+  \caption{A big-endian trie.} \label{fig:big-endian-trie}
 \end{figure}
 
 One approach is to treat all the prefix zero as effective bits.
@@ -167,10 +166,10 @@ class IntTrie:
 \index{Integer trie!insert}
 
 Since the key is little-endian integer, when insert a key, we take the
-bit one by one from the right most (LSB).
+bit one by one from the right most.
 If it is 0, we go to the left, otherwise go to the right
 for 1. If the child is empty, we need create a new node, and repeat this to
-the last bit (MSB) of the key.
+the last bit of the key.
 
 %\begin{algorithm}
 \begin{algorithmic}[1]
@@ -231,17 +230,17 @@ to the empty trie.
 \begin{figure}[htbp]
   \centering
   \includegraphics[scale=0.5]{img/int-trie.ps}
-  \caption{An little-endian integer binary trie for the map
+  \caption{A little-endian integer binary trie for the map
           \{$ 1 \rightarrow a, 4 \rightarrow b, 5 \rightarrow c, 9 \rightarrow d$\}.}
   \label{fig:int-trie}
 \end{figure}
 
 Because the definition of the integer trie is recursive, it's nature to define
-the insertion algorithm recursively. If the LSB is 0, it
+the insertion algorithm recursively. If the left-most bit is 0, it
 means that the key to be inserted is even, we recursively insert
-to the left child, we can divide the key by 2 to get
-rid of the LSB. If the LSB is 1, the key is odd number, the recursive
-insertion is applied to the right child. For trie $T$,
+to the left child, otherwise if the bit is 1, the key is odd number, the recursive
+insertion is applied to the right child. we next divide the key by 2 to get
+rid of the left-most bit. For trie $T$,
 denote the left and right children as $T_l$ and $T_r$ respectively.
 Thus $T = (T_l, d, T_r)$, where $d$ is the optional satellite data.
 if $T$ is empty, $T_l$, $T_r$ and $d$ are defined as empty as well.
@@ -290,7 +289,7 @@ reuses $m$ levels. The performance is bound to $O(m)$ time.
 \index{Integer trie!look up}
 
 To look up key $k$ in the little-endian integer binary trie. We take each
-bit of $k$ from the left (LSB), then go left if this bit is 0, otherwise,
+bit of $k$ from right, then go left if this bit is 0, otherwise,
 we go right. The looking up completes when all bits are consumed.
 
 \begin{algorithmic}[1]
@@ -337,7 +336,7 @@ left child; otherwise, we look up the right child.
 lookup(T, k) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & T = \Phi \\
+  \phi & T = \phi \\
   d & k = 0 \\
   lookup(T_l, k / 2) & even(k) \\
   lookup(T_r, \lfloor k / 2 \rfloor) & otherwise
@@ -369,12 +368,12 @@ number of bits for a given key.
 
 Trie has some drawbacks. It wastes a lot of
 spaces. Note in figure \ref{int-trie}, only leafs store the real data.
-Typically, the integer binary trie contains many nodes only have one child.
+It's very common that an integer binary trie contains many nodes only have one child.
 One improvement idea is to compress the chained nodes together.
 Patricia is such a data structure invented by
-Donald R. Morrison in 1968. Patricia means practical algorithm to retrieve information coded
-in alphanumeric\cite{patricia-morrison}. It is another kind of
-prefix tree.
+Donald R. Morrison in 1968. Patricia means practical algorithm to
+retrieve information coded in alphanumeric\cite{patricia-morrison}.
+It is another kind of prefix tree.
 
 Okasaki gives implementation of integer Patricia in \cite{okasaki-int-map}.
 If we merge the chained nodes which have only one child together in figure \ref{fig:int-trie},
@@ -388,7 +387,7 @@ We can get a Patricia as shown in figure \ref{fig:little-endian-patricia}.
   \label{fig:little-endian-patricia}
 \end{figure}
 
-From this figure, we can find that the key for the sibling nodes is the
+From this figure, we can find that the key for the branch node of siblings is the
 longest common prefix for them.
 They branches out at certain bit. Patricia saves a lot of spaces compare
 to trie.
@@ -473,11 +472,16 @@ class IntTree:
 \index{Integer Patricia!insert}
 When insert a key, if the tree is empty,
 we can just create a leaf node with the given key and satellite data,
-as shown in figure \ref{fig:int-patricia-insert-a}).
+as shown in figure \ref{fig:int-patricia-insert-a}.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=1]{img/int-patricia-insert-a.ps}
+    \begin{tikzpicture}[scale=1,
+      treenode/.style={circle, draw, inner sep= 0pt, minimum size = .6cm}]
+    \node[treenode] at (-2, 0) {NIL};
+    \node[treenode] at (2, 0) {12};
+    \end{tikzpicture}
+  %\includegraphics[scale=1]{img/int-patricia-insert-a.ps}
   \caption{Left: the empty tree; Right: After insert key 12.}
   \label{fig:int-patricia-insert-a}
 \end{figure}
@@ -498,8 +502,8 @@ shows this example.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=1]{img/int-patricia-insert-b.ps}
-  \caption{Left: A tree with singleton leaf 12; Right: After insert key 15.}
+  \includegraphics[scale=0.7]{img/int-patricia-insert-b.ps}
+  \caption{Left: A tree with a singleton leaf 12; Right: After insert key 15.}
   \label{fig:int-patricia-insert-b}
 \end{figure}
 
@@ -535,7 +539,7 @@ following.
 insert(T, k, v) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (k, v) & T = \Phi \lor T = (k, v') \\
+  (k, v) & T = \phi \lor T = (k, v') \\
   join(k, (k, v), k', T) & T = (k', v') \\
   (p, m, insert(T_l, k, v), T_r) & T = (p, m, T_l, T_r), match(k, p, m), zero(k, m) \\
   (p, m, T_l, insert(T_r, k, v)) & T = (p, m, T_l, T_r), match(k, p, m), \lnot zero(k, m) \\
@@ -551,7 +555,7 @@ value for the later case.
 The second clause handles the case that $T$ is a leaf node, but with different
 key. Here we need branch out another new leaf. We need extract the longest
 common prefix, and determine which leaf should be set as the left, and
-which should be set as the right child. Function $join(k_1, T_1, K_2, T_2)$
+which should be set as the right child. Function $join(k_1, T_1, k_2, T_2)$
 does this work. We'll define it later.
 
 The third clause deals with the case that $T$ is a branch node, the
@@ -572,7 +576,7 @@ the same prefix $p$ above the masked bits $m$.
 For example, suppose the prefix stored in a branch node is
 $(p_np_{n-1} ... p_i...p_0)_2$ in binary, key $k$ is
 $(k_nk_{n-1} ... k_i ... k_0)_2$ in binary, and the mask is
-$(100...0)_2=2^i$. They match if and only if $p_j=k_j$ for all $i \leq j \leq n$.
+$(100...0)_2=2^i$. They match if and only if $p_j=k_j$ for all $j$, that $i \leq j \leq n$.
 
 One solution to realize match is to test if $mask(k, m) = p$ is satisfied.
 Where $mask(x, m) = \overline{m-1} \& x$, that we perform bitwise-not of $m-1$, then
@@ -846,11 +850,11 @@ can return empty result to indicate not found error.
 lookup(T, k) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & T = \Phi \lor (T = (k', v), k' \neq k) \\
+  \phi & T = \phi \lor (T = (k', v), k' \neq k) \\
   v & T = (k', v), k' = k \\
   lookup(T_l, k) & T = (p, m, T_l, T_r), match(k, p, m), zero(k, m) \\
   lookup(T_r, k) & T = (p, m, T_l, T_r), match(k, p, m), \lnot zero(k, m) \\
-  \Phi & otherwise
+  \phi & otherwise
   \end{array}
 \right.
 \ee
@@ -905,7 +909,7 @@ the array of 26 letters. This can be illustrated as in Figure \ref{fig:trie-of-2
   \label{fig:trie-of-26}
 \end{figure}
 
-Not all branch nodes contain data. For instance, in Figure \ref{fig:trie-of-26},
+Not all the 26 branches contain data. For instance, in Figure \ref{fig:trie-of-26},
 the root only has three non-empty branches representing letter 'a',
 'b', and 'z'. Other branches such as for letter c, are all
 empty. We don't show empty branches in the rest of this chapter.
@@ -951,7 +955,7 @@ struct Trie {
 \subsection{Insertion}
 \index{Trie!insert}
 
-When insert string as key, start from the root, we pick the character
+When insert string as key, starting from the root, we pick the character
 one by one from the string, examine which child represents the character.
 If the corresponding child is empty, a new empty node is created.
 After that, the next character is used to select the proper grand child.
@@ -982,7 +986,7 @@ The following example ANSI C program implements the insertion algorithm.
 
 \lstset{language=C}
 \begin{lstlisting}
-struct Trie* insert(struct Trie* t, const char* key, void* value){
+struct Trie* insert(struct Trie* t, const char* key, void* value) {
     int c;
     struct Trie *p;
     if(!t)
@@ -1001,7 +1005,7 @@ Where function \texttt{create\_node} creates new empty node, with all
 children initialized to empty.
 
 \begin{lstlisting}
-struct Trie* create_node(){
+struct Trie* create_node() {
     struct Trie* t = (struct Trie*) malloc(sizeof(struct Trie));
     int i;
     for (i=0; i<26; ++i)
@@ -1025,7 +1029,7 @@ sub-tree $T_i$. if $T$ is empty, then $C$ is also empty.
 insert(T, K, v') = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (v', C) & K = \Phi \\
+  (v', C) & K = \phi \\
   (v, ins(C, k_1, K', v')) & otherwise.
   \end{array}
 \right.
@@ -1042,7 +1046,7 @@ can be defined as below.
 ins(C, k_1, K', v') = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \{(k_1, insert(\Phi, K', v'))\} & C = \Phi \\
+  \{(k_1, insert(\phi, K', v'))\} & C = \phi \\
   \{k_1, insert(T_1, K', v')\} \cup C' & k_1 = c_1 \\
   \{(c_1, T_1)\} \cup ins(C', k_1, K', v') & otherwise
   \end{array}
@@ -1121,8 +1125,8 @@ the key is $k_1$, and the rest characters are denoted as $K'$.
 lookup(T, K) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  v & K = \Phi \\
-  \Phi & find(C, k_1) = \Phi \\
+  v & K = \phi \\
+  \phi & find(C, k_1) = \phi \\
   lookup(T', K') & find(C, k_1) = T'
   \end{array}
 \right.
@@ -1139,7 +1143,7 @@ equation defines the $find$ function.
 find(C, k) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & C = \Phi \\
+  \phi & C = \phi \\
   T_1 & k_1 = k \\
   find(C', k) & otherwise
   \end{array}
@@ -1147,7 +1151,7 @@ find(C, k) = \left \{
 \ee
 
 The following Haskell example program implements the trie looking up
-algorithm. It uses the \texttt{find} function provided in standard library\cite{wiki-trie}.
+algorithm. It uses the \texttt{lookup} function provided in standard library.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
@@ -1247,10 +1251,10 @@ $s_i$ may be the prefix of $s$ as in figure \ref{fig:patricia-insert} (d).
 
 \begin{figure}[htbp]
   \centering
-  \subfloat[Insert key `boy' into the empty Patricia, the result is a leaf.]{\hspace{.2\textwidth}\includegraphics[scale=0.4]{img/patricia-insert-a.ps}\hspace{.1\textwidth}}
-  \subfloat[Insert key `bool'. A new branch with common prefix `bo' is created.]{\hspace{.1\textwidth}\includegraphics[scale=0.4]{img/patricia-insert-b.ps}\hspace{.2\textwidth}} \\
-  \subfloat[Insert key `an' with value $y$ into $x$ with prefix `another'.]{\hspace{.3\textwidth}\includegraphics[scale=0.4]{img/patricia-insert-c.ps}\hspace{.3\textwidth}} \\
-  \subfloat[Insert `another', into the node with prefix `an'. We recursively insert key `other' to the child.]{\hspace{.3\textwidth}\includegraphics[scale=0.4]{img/patricia-insert-d.ps}\hspace{.3\textwidth}}
+  \subfloat[Insert key `boy' into the empty Patricia, the result is a leaf.]{\hspace{.2\textwidth}\includegraphics[scale=0.45]{img/patricia-insert-a.ps}\hspace{.1\textwidth}}\hspace{.1\textwidth}
+  \subfloat[Insert key `bool'. A new branch with common prefix `bo' is created.]{\hspace{.1\textwidth}\includegraphics[scale=0.45]{img/patricia-insert-b.ps}\hspace{.2\textwidth}} \\
+  \subfloat[Insert key `an' with value $y$ into $x$ with prefix `another'.]{\hspace{.3\textwidth}\includegraphics[scale=0.45]{img/patricia-insert-c.ps}\hspace{.3\textwidth}} \\
+  \subfloat[Insert `another', into the node with prefix `an'. We recursively insert key `other' to the child.]{\hspace{.3\textwidth}\includegraphics[scale=0.45]{img/patricia-insert-d.ps}\hspace{.3\textwidth}}
   \caption{Patricia insertion}
   \label{fig:patricia-insert}
 \end{figure}
@@ -1296,8 +1300,8 @@ The insertion algorithm can be described as below.
 \end{algorithmic}
 
 In the above algorithm, \textproc{LCP} function finds the longest
-common prefix of two given strings, for example, string `bool' and `boy'
-has the longest common prefix `bo'. The subtraction symbol '-' for
+common prefix of the two given strings, for example, string `bool' and `boy'
+have the longest common prefix `bo'. The subtraction symbol '-' for
 strings gives the different part of two strings. For example `bool' - `bo' = `ol'. \textproc{Branch} function creates a branch node
 and updates keys accordingly.
 
@@ -1322,7 +1326,7 @@ we create a new branch node and set $T_1$ and $T_2$ as the two children.
 
 \begin{algorithmic}[1]
 \Function{Branch}{$s_1, T_1, s_2, T_2$}
-  \If{$s_1 = \Phi$}
+  \If{$s_1 = \phi$}
     \State \Call{Children}{$T_1$} $\gets$ \Call{Children}{$T_1$} $\cup \{(s_2, T_2)\}$
     \State \Return $T_1$
   \EndIf
@@ -1410,7 +1414,7 @@ $C'$ holds all the prefix-sub tree pairs except for the first one.
 ins(C, k, v') = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \{(k, (v', \Phi))\} & C = \Phi \\
+  \{(k, (v', \phi))\} & C = \phi \\
   \{(k, (v', C_{T_1}))\} \cup C' & k_1 = k \\
   \{branch(k, v', k_1, T_1)\} \cup C' & match(k_1, k) \\
   \{(k_1, T_1)\} \cup ins(C', k, v') & otherwise
@@ -1431,7 +1435,7 @@ We define two keys $A$ and $B$ matching if they
 have non-empty common prefix.
 
 \be
-match(A, B) = A \neq \Phi \land B \neq \Phi \land a_1 = b_1
+match(A, B) = A \neq \phi \land B \neq \phi \land a_1 = b_1
 \ee
 
 Where $a_1$ and $b_1$ are the first characters in $A$ and $B$ if
@@ -1456,10 +1460,20 @@ branch(k_1, v, k_2, T_2) = \left \{
   {r@{\quad:\quad}l}
   (k, (v, \{(k_2', T_2)\})) & k = k_1 \\
   (k, insert(T_2, k_1', v)) & k = k_2 \\
-  (k, (\Phi, \{(k_1', (v, \Phi)), (k_2', T_2)\}) & otherwise
+  (k, (\phi, \{(k_1', (v, \phi)), (k_2', T_2)\}) & otherwise
   \end{array}
 \right.
 \ee
+
+Where
+
+\[
+\begin{array}{l}
+k = lcp(k_1, k_2) \\
+k_1' = k_1 - k \\
+k_2' = k_1 - k
+\end{array}
+\]
 
 And function $lcp(A, B)$ keeps taking same characters from $A$ and $B$
 one by one. Denote $a_1$ and $b_1$ as
@@ -1470,7 +1484,7 @@ $A'$ and $B'$ are the rest parts except for the first characters.
 lcp(A, B) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & A = \Phi \lor B = \Phi \lor a_1 \neq b_1 \\
+  \phi & A = \phi \lor B = \phi \lor a_1 \neq b_1 \\
   \{a_1\} \cup lcp(A', B') & a_1 = b_1
   \end{array}
 \right.
@@ -1586,7 +1600,7 @@ recursively check the rest pairs denoted as $C'$.
 find(C, k) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & C = \Phi \\
+  \phi & C = \phi \\
   v_{T_1} & k = k_1 \\
   lookup(T_1, k - k_1) & k_1 \sqsubset k \\
   find(C', k) & otherwise
@@ -1602,13 +1616,13 @@ Below Haskell example program implements the looking up algorithm.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-import qualified Data.List
+import Data.List
 
 find t k = find' (children t) k where
     find' [] _ = Nothing
     find' (p:ps) k
           | (fst p) == k = value (snd p)
-          | (fst p) `Data.List.isPrefixOf` k = find (snd p) (diff (fst p) k)
+          | (fst p) `isPrefixOf` k = find (snd p) (diff (fst p) k)
           | otherwise = find' ps k
     diff k1 k2 = drop (length (lcp k1 k2)) k2
 \end{lstlisting}
@@ -1649,7 +1663,7 @@ caching, indexing etc to speed up this process.
 
 Similar with e-dictionary, figure \ref{fig:word-completion} shows a popular
 Internet search engine. When user input something, it provides a candidate
-lists, with all items starting with what the user has entered. And these candidates
+lists, with all items starting with what the user has entered\footnote{It's more complex than just matching the prefix. Including the spell checking and auto currection, key words extraction and recommendation etc.}. And these candidates
 are shown in the order of popularity. The more people search, the
 upper position it is in the list.
 
@@ -1689,7 +1703,7 @@ it expands all its children until getting $n$ candidates.
 \begin{algorithmic}[1]
 \Function{Look-Up}{$T, k, n$}
   \If{$T = $ NIL}
-     \State \Return $\Phi$
+     \State \Return $\phi$
   \EndIf
   \State $prefix \gets$ NIL
   \Repeat
@@ -1707,7 +1721,7 @@ it expands all its children until getting $n$ candidates.
       \EndIf
     \EndFor
   \Until{$\lnot match$}
-  \State \Return $\Phi$
+  \State \Return $\phi$
 \EndFunction
 \end{algorithmic}
 
@@ -1717,7 +1731,7 @@ explains BFS in detail.
 
 \begin{algorithmic}[1]
 \Function{Expand}{$T, prefix, n$}
-  \State $R \gets \Phi$
+  \State $R \gets \phi$
   \State $Q \gets \{(prefix, T)\}$
   \While{$|R| < n \land |Q| > 0$}
     \State $(k, T) \gets$ \Call{Pop}{$Q$}
@@ -1783,9 +1797,9 @@ below function enumerates all items starts with key $k$.
 findAll(T, k) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  enum(C) & k = \Phi, v = \Phi \\
-  \{(\Phi, v)\} \cup enum(C) & k = \Phi, v \neq \Phi \\
-  find(C, k) & k \neq \Phi
+  enum(C) & k = \phi, v = \phi \\
+  \{(\phi, v)\} \cup enum(C) & k = \phi, v \neq \phi \\
+  find(C, k) & k \neq \phi
   \end{array}
 \right.
 \ee
@@ -1802,8 +1816,8 @@ The enumeration algorithm can be defined as below.
 enum(C) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & C = \Phi \\
-  mapAppend(k_1, findAll(T_1, \Phi)) \cup enum(C')
+  \phi & C = \phi \\
+  mapAppend(k_1, findAll(T_1, \phi)) \cup enum(C')
   \end{array}
 \right.
 \ee
@@ -1824,10 +1838,10 @@ and goes on find the rest children.
 find(C, k) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & C = \Phi \\
-  mapAppend(k, findAll(T_1, \Phi)) & k_1 = k \\
+  \phi & C = \phi \\
+  mapAppend(k, findAll(T_1, \phi)) & k_1 = k \\
   mapAppend(k_1, findAll(T_1, k - k_1)) & k_1 \sqsubset k \\
-  findAll(T_1, \Phi) & k \sqsubset k_1 \\
+  findAll(T_1, \phi) & k \sqsubset k_1 \\
   find(C', k) & otherwise
   \end{array}
 \right.
@@ -1893,7 +1907,7 @@ in below sequence.
 \begin{itemize}
 \item Press key '4' twice to enter the letter 'h';
 \item Press key '6' three times to enter the letter 'o';
-\item Press key '6' twice to enter the letter 'm';
+\item Press key '6' to enter the letter 'm';
 \item Press key '3' twice to enter the letter 'e';
 \end{itemize}
 
@@ -1939,13 +1953,13 @@ below pseudo code shows how to realize T9 with trie.
 
 \begin{algorithmic}[1]
 \Function{Look-Up-T9}{$T, D$}
-  \State $Q \gets \{(\Phi, D, T)\}$
-  \State $R \gets \Phi$
-  \While{$Q \neq \Phi$}
+  \State $Q \gets \{(\phi, D, T)\}$
+  \State $R \gets \phi$
+  \While{$Q \neq \phi$}
     \State $(prefix, D, T) \gets$ \Call{Pop}{$Q$}
     \For{each $c$ in $M_{T9}[d_1]$}
       \If{$c \in $ \Call{Children}{$T$}}
-        \If{$D' = \Phi$}
+        \If{$D' = \phi$}
           \State $R \gets R \cup \{prefix + c\}$
         \Else
           \State \textproc{Push}($Q, (prefix + c, D', $ \Call{Children}{$t$}$[c])$)
@@ -2006,9 +2020,9 @@ and the sub-tree. Then put the tuple back to the queue for further search.
 
 \begin{algorithmic}[1]
 \Function{Look-Up-T9}{$T, D$}
-  \State $Q \gets \{(\Phi, D, T)\}$
-  \State $R \gets \Phi$
-  \While{$Q \neq \Phi$}
+  \State $Q \gets \{(\phi, D, T)\}$
+  \State $R \gets \phi$
+  \While{$Q \neq \phi$}
     \State $(prefix, D, T) \gets$ \Call{Pop}{$Q$}
     \For{each $(k_i, T_i) \in $ \Call{Children}{$T$}}
       \State $D' \gets$ \Call{Convert-T9}{$k_i$}
@@ -2029,7 +2043,7 @@ Function \textproc{Convert-T9}($K$) converts each character in $K$ back to digit
 
 \begin{algorithmic}[1]
 \Function{Convert-T9}{$K$}
-  \State $D \gets \Phi$
+  \State $D \gets \phi$
   \For{each $c \in K$}
      \For{each $(d \rightarrow S) \in M_{T9}$}
        \If{$c \in S$}
@@ -2074,8 +2088,8 @@ to the first digit $d_1$ according to T9 map.
 findT9(T, D) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \{ \Phi \} & D = \Phi \\
-  fold(f, \Phi, lookupT9(d_1, C)) & otherwise
+  \{ \phi \} & D = \phi \\
+  fold(f, \phi, lookupT9(d_1, C)) & otherwise
   \end{array}
 \right.
 \ee
@@ -2097,7 +2111,7 @@ Function $lookupT9(k, C)$ checks all the possible characters mapped to digit $k$
 If the character is bound to some child in $C$, it is record as one candidate.
 
 \be
-lookupT9(d, C) =  fold(g, \Phi, M_{T9}[k])
+lookupT9(d, C) =  fold(g, \phi, M_{T9}[k])
 \ee
 
 Where
@@ -2106,7 +2120,7 @@ Where
 g(L, k) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  L & find(C, k) = \Phi \\
+  L & find(C, k) = \phi \\
   \{(k, T')\} \cup L & find(C, k) = T'
   \end{array}
 \right.
@@ -2141,8 +2155,8 @@ Firstly, the sub-tree is bound to prefix string, but not a single character.
 findT9(T, D) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \{ \Phi \} & D = \Phi \\
-  fold(f, \Phi, findPrefixT9(D, C)) & otherwise
+  \{ \phi \} & D = \phi \\
+  fold(f, \phi, findPrefixT9(D, C)) & otherwise
   \end{array}
 \right.
 \ee

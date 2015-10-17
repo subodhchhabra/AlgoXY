@@ -53,18 +53,18 @@ trees or implicit array.
 It's quite natural to extend the binary tree to K-ary \cite{K-ary-tree} tree.
 In this chapter, we first show Binomial heaps
 which is actually consist of forest of K-ary trees. Binomial heaps gain the
-performance for all operations to $O(\lg N)$, as well as keeping the finding
+performance for all operations to $O(\lg n)$, as well as keeping the finding
 minimum element to $O(1)$ time.
 
 If we delay some operations in Binomial
 heaps by using lazy strategy, it turns to be Fibonacci heap.
 
 All binary heaps we have shown perform
-no less than $O(\lg N)$ time for merging, we'll show it's possible to
+no less than $O(\lg n)$ time for merging, we'll show it's possible to
 improve it to $O(1)$ with Fibonacci heap, which is quite helpful to
 graph algorithms. Actually, Fibonacci heap achieves almost all operations
 to good amortized time bound as $O(1)$,
-and left the heap pop to $O(\lg N)$.
+and left the heap pop to $O(\lg n)$.
 
 Finally, we'll introduce about the pairing heaps. It has the best performance in practice although the proof of it is still a conjecture for the time
 being.
@@ -83,7 +83,7 @@ being.
 \subsection{Definition}
 
 Binomial heap is more complex than most of the binary heaps. However,
-it has excellent merge performance which bound to $O(\lg N)$ time. A
+it has excellent merge performance which bound to $O(\lg n)$ time. A
 binomial heap is consist of a list of binomial trees.
 
 \subsubsection{Binomial tree}
@@ -110,7 +110,7 @@ in this way as the following.
 
 \begin{itemize}
 \item A binomial tree of rank 0 has only a node as the root;
-\item A binomial tree of rank $N$ is consist of two rank $N-1$ binomial trees,
+\item A binomial tree of rank $n$ is consist of two rank $n-1$ binomial trees,
 Among these 2 sub trees, the one has the bigger root element is linked as the
 leftmost child of the other.
 \end{itemize}
@@ -141,11 +141,11 @@ of rank 0, 1, 2, ..., as shown in figure \ref{fig:bitree-forms}
   \caption{Forms of binomial trees with rank = 0, 1, 2, 3, 4, ...} \label{fig:bitree-forms}
 \end{figure}
 
-Observing the binomial trees reveals some interesting properties. For each rank $N$ binomial tree, if counting the number of nodes in each row, it can be found that it is the binomial number.
+Observing the binomial trees reveals some interesting properties. For each rank $n$ binomial tree, if counting the number of nodes in each row, it can be found that it is the binomial number.
 
 For instance for rank 4 binomial tree, there is 1 node as the root; and in the second level next to root, there are 4 nodes; and in 3rd level, there are 6 nodes; and in 4-th level, there are 4 nodes; and the 5-th level, there is 1 node. They are exactly 1, 4, 6, 4, 1 which is the 5th row in Pascal's triangle. That's why we call it binomial tree.
 
-Another interesting property is that the total number of node for a binomial tree with rank $N$ is $2^N$. This can be proved either by binomial theory or the recursive definition directly.
+Another interesting property is that the total number of node for a binomial tree with rank $n$ is $2^n$. This can be proved either by binomial theory or the recursive definition directly.
 
 \subsubsection{Binomial heap}
 \label{Binomial heap} \index{Binomial heap!definition}
@@ -157,7 +157,7 @@ With binomial tree defined, we can introduce the definition of binomial heap. A 
 \item There is at most one binomial tree which has the rank $r$. In other words, there are no two binomial trees have the same rank.
 \end{itemize}
 
-This definition leads to an important result that for a binomial heap contains $N$ elements, and if convert $N$ to binary format yields $a_0, a_1, a_2, ..., a_m$, where $a_0$ is the LSB and $a_m$ is the MSB, then for each $0 \leq i \leq m$, if $a_i=0$, there is no binomial tree of rank $i$ and if $a_i = 1$, there must be a binomial tree of rank $i$.
+This definition leads to an important result that for a binomial heap contains $n$ elements, and if convert $n$ to binary format yields $a_0, a_1, a_2, ..., a_m$, where $a_0$ is the LSB and $a_m$ is the MSB, then for each $0 \leq i \leq m$, if $a_i=0$, there is no binomial tree of rank $i$ and if $a_i = 1$, there must be a binomial tree of rank $i$.
 
 For example, if a binomial heap contains 5 element, as 5 is `(LSB)101(MSB)', then there are 2 binomial trees in this heap, one tree has rank 0, the other has rank 2.
 
@@ -291,7 +291,6 @@ to translate the link function to Haskell program as the following.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-link :: (Ord a) => BiTree a -> BiTree a -> BiTree a
 link t1@(Node r x c1) t2@(Node _ y c2) =
     if x<y then Node (r+1) x (t2:c1)
     else Node (r+1) y (t1:c2)
@@ -400,10 +399,10 @@ tree, it must be the smallest, we put this new tree in front of
 all the other trees in the forest.
 
 From the binomial properties mentioned above, there are at most
-$O(\lg N)$ binomial trees in the forest, where $N$ is the total
-number of nodes. Thus function $insertT$ performs at most $O(\lg N)$
+$O(\lg n)$ binomial trees in the forest, where $n$ is the total
+number of nodes. Thus function $insertT$ performs at most $O(\lg n)$
 times linking, which are all constant time operation. So the
-performance of $insertT$ is $O(\lg N)$.
+performance of $insertT$ is $O(\lg n)$.
 \footnote{There is interesting observation by comparing this
 operation with adding two binary numbers. Which will lead to
 topic of {\em numeric representation}\cite{okasaki-book}.}
@@ -412,7 +411,6 @@ The relative Haskell program is given as below.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-insertTree :: (Ord a) => BiHeap a -> BiTree a -> BiHeap a
 insertTree [] t = [t]
 insertTree ts@(t':ts') t = if rank t < rank t' then t:ts
                            else insertTree ts' (link t t')
@@ -435,7 +433,7 @@ fromList = foldl insert []
 
 Since wrapping an element as a singleton tree takes $O(1)$ time,
 the real work is done in $insertT$, the performance of binomial
-heap insertion is bound to $O(\lg N)$.
+heap insertion is bound to $O(\lg n)$.
 
 The insertion algorithm can also be realized with imperative approach.
 
@@ -562,17 +560,16 @@ $H_1$, and $m_2$ trees in $H_2$. There are at most $m_1 + m_2$ trees in
 the merged result. If there are no two trees have the same rank, the
 merge operation is bound to $O(m_1 + m_2)$. While if there need linking
 for the trees with same rank, $insertT$ performs at most $O(m_1+m_2)$
-time. Consider the fact that $m_1 = 1 + \lfloor \lg N_1 \rfloor$ and
-$m_2 = 1 + \lfloor \lg N_2 \rfloor$, where
-$N_1$, $N_2$ are the numbers of nodes in each heap, and
-$\lfloor \lg N_1 \rfloor + \lfloor \lg N_2 \rfloor \leq 2 \lfloor \lg N \rfloor$, where $N = N_1 + N_2$, is the total number of nodes.
-the final performance of merging is $O(\lg N)$.
+time. Consider the fact that $m_1 = 1 + \lfloor \lg n_1 \rfloor$ and
+$m_2 = 1 + \lfloor \lg n_2 \rfloor$, where
+$n_1$, $n_2$ are the numbers of nodes in each heap, and
+$\lfloor \lg n_1 \rfloor + \lfloor \lg n_2 \rfloor \leq 2 \lfloor \lg n \rfloor$, where $n = n_1 + n_2$, is the total number of nodes.
+the final performance of merging is $O(\lg n)$.
 
 Translating this algorithm to Haskell yields the following program.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-merge:: (Ord a) => BiHeap a -> BiHeap a -> BiHeap a
 merge ts1 [] = ts1
 merge [] ts2 = ts2
 merge ts1@(t1:ts1') ts2@(t2:ts2')
@@ -703,8 +700,8 @@ Among the forest which forms the binomial heap, each binomial tree
 conforms to heap property that the root contains the minimum element
 in that tree. However, the order relationship of these roots can be
 arbitrary. To find the minimum element in the heap, we can select the
-smallest root of these trees. Since there are $\lg N$ binomial trees,
-this approach takes $O(\lg N)$ time.
+smallest root of these trees. Since there are $\lg n$ binomial trees,
+this approach takes $O(\lg n)$ time.
 
 However, after we locate the minimum element (which is also know as
 the top element of a heap), we need remove it from the heap and keep
@@ -715,7 +712,7 @@ rank $k$, and the minimum element is the root of $B_p$. If we
 delete it, there will be $p$ children left, which are all
 binomial trees with ranks $p-1, p-2, ..., 0$.
 
-One tool at hand is that we have defined $O(\lg N)$ merge function.
+One tool at hand is that we have defined $O(\lg n)$ merge function.
 A possible approach is to reverse the $p$ children, so that their
 ranks change to monotonically increasing order, and forms a binomial
 heap $H_p$. The rest of trees is still a binomial
@@ -760,13 +757,12 @@ tree which has the minimum element at root, the second part is
 the rest of the trees after remove the first part from the forest.
 
 This function examine each of the trees in the forest thus is bound
-to $O(\lg N)$ time.
+to $O(\lg n)$ time.
 
 The relative Haskell program can be give respectively.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-extractMin :: (Ord a) => BiHeap a -> (BiTree a, BiHeap a)
 extractMin [t] = (t, [])
 extractMin (t:ts) = if root t < root t' then (t, ts)
                     else (t', t:ts')
@@ -777,8 +773,7 @@ extractMin (t:ts) = if root t < root t' then (t, ts)
 With this function defined, to return the minimum element is trivial.
 
 \begin{lstlisting}
-findMin :: (Ord a) => BiHeap a -> a
-findMin = root . fst. extractMin
+findMin = root . fst . extractMin
 \end{lstlisting}
 
 Of course, it's possible to just traverse forest and pick the
@@ -864,7 +859,6 @@ Translate to Haskell yields the following program.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-heapSort :: (Ord a) => [a] -> [a]
 heapSort = hsort . fromList where
     hsort [] = []
     hsort h = (findMin h):(hsort $ deleteMin h)
@@ -890,7 +884,7 @@ imperative programming language.
 \end{Exercise}
 
 \subsubsection{More words about binomial heap}
-As what we have shown that insertion and merge are bound to $O(\lg N)$
+As what we have shown that insertion and merge are bound to $O(\lg n)$
 time. The results are all ensure for the {\em worst case}. The
 amortized performance are $O(1)$. We skip the proof for this
 fact.
@@ -933,10 +927,10 @@ heap (more precisely, the performance goal of Fibonacci heap).
   \hline
   operation & Binomial heap & Fibonacci heap \\
   \hline
-  insertion & $O(\lg N)$ & $O(1)$ \\
-  merge & $O(\lg N)$ & $O(1)$ \\
-  top & $O(\lg N)$ & $O(1)$ \\
-  pop & $O(\lg N)$ & amortized $O(\lg N)$ \\
+  insertion & $O(\lg n)$ & $O(1)$ \\
+  merge & $O(\lg n)$ & $O(1)$ \\
+  top & $O(\lg n)$ & $O(1)$ \\
+  pop & $O(\lg n)$ & amortized $O(\lg n)$ \\
   \hline
 \end{tabular}
 % \end{table}
@@ -948,14 +942,14 @@ this tree into the heap which is actually a forest.
 During this operation, we inserted the tree in
 monotonically increasing order of rank, and once the rank is equal,
 recursively linking and inserting will happen, which lead to the
-$O(\lg N)$ time.
+$O(\lg n)$ time.
 
 As the lazy strategy, we can postpone the ordered-rank insertion and
 merging operations. On the contrary, we just put the singleton
 leaf to the forest. The problem is that when we try to find the
 minimum element, for example the top operation, the performance
 will be bad, because we need check all trees in the forest, and
-there aren't only $O(\lg N)$ trees.
+there aren't only $O(\lg n)$ trees.
 
 In order to locate the top element in constant time, we must remember
 where is the tree contains the minimum element as root.
@@ -1013,7 +1007,7 @@ typedef int Key;
 In this chapter, we use the circular doubly linked-list for imperative
 settings to realize the Fibonacci Heap as described in \cite{CLRS}.
 It makes many operations easy and fast. Note that, there are two extra
-fields added. A $degree$ also known as $rank$ for a node is the number
+fields added. A $degree$, also known as $rank$ for a node is the number
 of children of this node; Flag $mark$ is used only in decreasing key
 operation. It will be explained in detail in later section.
 
@@ -1028,10 +1022,9 @@ defined for binomial heap.
 
 \subsubsection{Insert a new element to the heap}
 \index{Fibonacci Heap!insert}
-Recall the insertion algorithm of binomial  tree. It can be treated
+Recall the insertion algorithm of binomial tree. It can be treated
 as a special case of merge operation, that one heap contains only
-a singleton tree. So that the inserting algorithm can be defined
-by means of merging.
+a singleton tree.
 
 \be
 insert(H, x) = merge(H, singleton(x))
@@ -1122,7 +1115,6 @@ is the translation of this algorithm.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-merge:: (Ord a) => FibHeap a -> FibHeap a -> FibHeap a
 merge h E = h
 merge E h = h
 merge h1@(FH sz1 minTr1 ts1) h2@(FH sz2 minTr2 ts2)
@@ -1143,7 +1135,6 @@ the root lists of the two heaps.
     \State $T_{min}(H) \gets T_{min}(H_2)$
   \EndIf
   \Call{n}{$H$} = \Call{n}{$H_1$} + \Call{n}{$H_2$}
-  \State release $H_1$ and $H_2$
   \State \Return $H$
 \EndFunction
 \end{algorithmic}
@@ -1187,7 +1178,7 @@ your favorite imperative programming language.
 \subsubsection{Extract the minimum element from the heap (pop)}
 \index{Fibonacci Heap!pop} \index{Fibonacci Heap!delete min}
 
-The pop (delete the minimum element) operation is the most complex
+The pop operation is the most complex
 one in Fibonacci heap. Since we postpone the tree consolidation
 in merge algorithm. We have to compensate it somewhere. Pop is
 the only place left as we have defined, insert, merge, top already.
@@ -1212,7 +1203,7 @@ consolidate(L) = fold(meld, \phi, L)
 
 Where $fold()$ function is defined to iterate all elements from a list,
 applying a specified function to the intermediate result and each
-element. it is sometimes called as {\em reducing}. Please refer to the
+element. it is sometimes called as {\em reducing}. Please refer to Appendix A and the
 chapter of binary search tree for it.
 
 $L=\{x_1, x_2, ..., x_n\}$, denotes a list of numbers; and we'll use
@@ -1303,7 +1294,6 @@ The final consolidate Haskell program changes to the below version.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-consolidate :: (Ord a) => [BiTree a] -> [BiTree a]
 consolidate = foldl meld [] where
     meld [] t = [t]
     meld (t':ts) t | rank t == rank t' = meld ts (link t t')
@@ -1318,7 +1308,7 @@ of trees. Comparing with table \ref{tb:num-consolidate} reveals the similarity.
 \begin{figure}[htbp]
   \centering
   \subfloat[Before consolidation]{\includegraphics[scale=0.5]{img/fib-meld-01.ps}} \\
-  \subfloat[Step 1, 2]{\includegraphics[scale=0.5]{img/fib-meld-02.ps}}
+  \subfloat[Step 1, 2]{\includegraphics[scale=0.5]{img/fib-meld-02.ps}\hspace{0.1\textwidth}}
   \subfloat[Step 3, 'd' is firstly linked to 'c', then repeatedly linked to 'a'.]{ \hspace{0.1\textwidth} \includegraphics[scale=0.5]{img/fib-meld-03.ps} \hspace{0.1\textwidth}}
   \subfloat[Step 4]{\includegraphics[scale=0.5]{img/fib-meld-04.ps}}
   \caption{Steps of consolidation} \label{fig:fib-meld-a}
@@ -1337,7 +1327,7 @@ record for the minimum element in root, in a Fibonacci heap, the heap
 becomes a Binomial heap. And we lost the special tree, which gives
 us the ability to return the top element in $O(1)$ time.
 
-It's necessary to perform a $O(\lg N)$ time search to resume the
+It's necessary to perform a $O(\lg n)$ time search to resume the
 special tree. We can reuse the function $extractMin()$ defined for
 Binomial heap.
 
@@ -1369,7 +1359,6 @@ Translate to Haskell yields the below program.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-deleteMin :: (Ord a) => FibHeap a -> FibHeap a
 deleteMin (FH _ (Node _ x []) []) = E
 deleteMin h@(FH sz minTr ts) = FH (sz-1) minTr' ts' where
     (minTr', ts') = extractMin $ consolidate (children minTr ++ ts)
@@ -1515,7 +1504,7 @@ E = M \cdot g \cdot h
 
 Suppose there is a complex process, which moves the object with mass $M$
 up and down, and finally the object stop at height $h'$. And if there
-exists  friction resistance $W_f$, We say
+exists friction resistance $W_f$, We say
 the process works the following power.
 
 \[
@@ -1550,14 +1539,14 @@ For pop operation analysis, the potential can be defined as
 Where $t(H)$ is the number of trees in Fibonacci heap forest.
 We have $t(H) = 1 + length(\mathbb{T})$ for any non-empty heap.
 
-For the $N$-nodes Fibonacci heap, suppose there is an upper bound
-of ranks for all trees as $D(N)$. After consolidation, it ensures
-that the number of trees in the heap forest is at most $D(N)+1$.
+For the $n$-nodes Fibonacci heap, suppose there is an upper bound
+of ranks for all trees as $D(n)$. After consolidation, it ensures
+that the number of trees in the heap forest is at most $D(n)+1$.
 
 Before consolidation, we actually did another important thing, which
 also contribute to running time, we removed the root of the minimum
 tree, and concatenate all children left to the forest. So consolidate
-operation at most processes $D(N)+t(H)-1$ trees.
+operation at most processes $D(n)+t(H)-1$ trees.
 
 Summarize all the above factors, we deduce the amortized cost
 as below.
@@ -1565,18 +1554,23 @@ as below.
 \be
 \begin{array}{lll}
 T & = & T_{consolidation} + \Phi(H') -\Phi(H) \\
-  & = & O(D(N)+t(H)-1) + (D(N) + 1) - t(H) \\
-  & = & O(D(N))
+  & = & O(D(n)+t(H)-1) + (D(n) + 1) - t(H) \\
+  & = & O(D(n))
 \end{array}
 \ee
 
 If only insertion, merge, and pop function are applied to Fibonacci
 heap. We ensure that all trees are binomial trees. It is easy to
-estimate the upper limit $D(N)$ if $O(\lg N)$. (Suppose the extreme
+estimate the upper limit $D(n)$ is $O(\lg n)$. (Suppose the extreme
 case, that all nodes are in only one Binomial tree).
 
 However, we'll show in next sub section that, there is operation can
 violate the binomial tree assumption.
+
+\begin{Exercise}
+Why the tree consolidation time is proportion to the number of trees
+it processed?
+\end{Exercise}
 
 \subsection{Decreasing key}
 \index{Fibonacci Heap!decrease key}
@@ -1585,12 +1579,12 @@ heap operation left. It only makes sense for imperative settings.
 It's about decreasing key of a certain node. Decreasing key plays
 important role in some Graphic algorithms such as Minimum Spanning
 tree algorithm and Dijkstra's algorithm \cite{CLRS}. In that case
-we hope the decreasing key takes O(1) amortized time.
+we hope the decreasing key takes $O(1)$ amortized time.
 
 However, we can't define a function like $Decrease(H, k, k')$, which
 first locates a node with key $k$, then decrease $k$ to $k'$ by replacement,
 and then resume the heap properties. This is because the time for
-locating phase is bound to $O(N)$ time, since we don't have a pointer
+locating phase is bound to $O(n)$ time, since we don't have a pointer
 to the target node.
 
 In imperative setting, we can define the algorithm as
@@ -1603,7 +1597,7 @@ may violate the property Binomial tree that the key of parent is
 less than all keys of children. So we need to compare the decreased key
 with the parent node, and if this case happens, we can cut this node
 and append it to the root list. (Remind the recursive swapping solution
-for binary heap which leads to $O(\lg N)$)
+for binary heap which leads to $O(\lg n)$)
 
 \begin{figure}[htbp]
   \centering
@@ -1724,8 +1718,8 @@ Prove that \textproc{Decrease-Key} algorithm is amortized $O(1)$ time.
 It's time to reveal the reason why the data structure is named
 as 'Fibonacci Heap'.
 
-There is only one undefined algorithm so far, \textproc{Max-Degree}($N$).
-Which can determine the upper bound of degree for any node in a $N$ nodes
+There is only one undefined algorithm so far, \textproc{Max-Degree}($n$).
+Which can determine the upper bound of degree for any node in a $n$ nodes
 Fibonacci Heap. We'll give the proof by using Fibonacci series and
 finally realize \textproc{Max-Degree} algorithm.
 
@@ -1755,7 +1749,7 @@ Consider all $k$ children of node $x$, we denote them as $y_1, y_2, ..., y_k$
 in the order of time when they were linked to $x$. Where $y_1$ is the
 oldest, and $y_k$ is the youngest.
 
-Obviously, $y_i \geq 0$. When we link $y_i$ to $x$, children $y_1, y_2, ..., y_{i-1}$ have already been there. And algorithm \textproc{LINK} only links
+Obviously, $|y_i| \geq 0$. When we link $y_i$ to $x$, children $y_1, y_2, ..., y_{i-1}$ have already been there. And algorithm \textproc{Link} only links
 nodes with the same degree. Which indicates at that time, we have
 
 \[
@@ -1796,7 +1790,7 @@ For induction case $k \geq 2$. We have
 At this point, we need prove that
 
 \be
-F_{k+2} = 1 +  \sum_{i=}^{k} F_i
+F_{k+2} = 1 +  \sum_{i=0}^{k} F_i
 \ee
 
 This can also be proved by using induction:
@@ -1812,32 +1806,32 @@ This can also be proved by using induction:
 
 Summarize all above we have the final result.
 \be
-N \geq |x| \geq F_k+2
+n \geq |x| \geq F_k+2
 \ee
 \end{proof}
 
-Recall the result of AVL tree, that $F_k \geq \Phi^k$, where
-$\Phi = \frac{1+\sqrt{5}}{2}$ is the golden ratio. We also proved
-that pop operation is amortized $O(\lg N)$ algorithm.
+Recall the result of AVL tree, that $F_k \geq \phi^k$, where
+$\phi = \frac{1+\sqrt{5}}{2}$ is the golden ratio. We also proved
+that pop operation is amortized $O(\lg n)$ algorithm.
 
 Based on this result. We can define Function $MaxDegree$ as the following.
 
 \be
-  MaxDegree(N) = 1 + \lfloor \log_{\Phi} N \rfloor
+  MaxDegree(n) = 1 + \lfloor \log_{\phi} n \rfloor
 \ee
 
 The imperative \textproc{Max-Degree} algorithm can also be realized by
 using Fibonacci sequences.
 
 \begin{algorithmic}[1]
-\Function{Max-Degree}{$N$}
+\Function{Max-Degree}{$n$}
   \State $F_0 \gets 0$
   \State $F_1 \gets 1$
   \State $k \gets 2$
   \Repeat
     \State $F_k \gets F_{k_1} + F_{k_2}$
     \State $k \gets k+1$
-  \Until{$F_k < N$}
+  \Until{$F_k < n$}
   \State \Return $k-2$
 \EndFunction
 \end{algorithmic}
@@ -1874,11 +1868,11 @@ In this section, we'll introduce another solution, Pairing heap,
 which is one of the best heaps ever known in terms of performance.
 Most operations including insertion, finding minimum element (top),
 merging are all bounds to $O(1)$ time, while deleting minimum element (pop)
-is conjectured to amortized $O(\lg N)$ time \cite{pairing-heap}
+is conjectured to amortized $O(\lg n)$ time \cite{pairing-heap}
 \cite{okasaki-book}. Note that this is still
 a conjecture for 15 years by the time I write this chapter. Nobody has been
 proven it although there are much experimental data support the
-$O(\lg N)$ amortized result.
+$O(\lg n)$ amortized result.
 
 Besides that, pairing heap is simple. There exist both elegant
 imperative and functional implementations.
@@ -1931,7 +1925,7 @@ time being.
 % ================================================================
 \subsection{Basic heap operations}
 In this section, we first give the merging operation for pairing
-heap, which can be used to realize the insertion. Merging, insertion,
+heap, which can be used to realize insertion. Merging, insertion,
 and finding the minimum element are relative trivial compare to
 the extracting minimum element operation.
 
@@ -1983,7 +1977,6 @@ The $merge$ equation can be translated to the following Haskell program.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-merge :: (Ord a) => PHeap a -> PHeap a -> PHeap a
 merge h E = h
 merge E h = h
 merge h1@(Node x hs1) h2@(Node y hs2) =
@@ -2017,12 +2010,12 @@ example program is given as the following.
 
 \lstset{language=C}
 \begin{lstlisting}
-struct node* merge(struct node* h1, struct node* h2){
-  if(h1 == NULL)
+struct node* merge(struct node* h1, struct node* h2) {
+  if (h1 == NULL)
     return h2;
-  if(h2 == NULL)
+  if (h2 == NULL)
     return h1;
-  if(h2->key < h1->key)
+  if (h2->key < h1->key)
     swap(&h1, &h2);
   h2->next = h1->children;
   h1->children = h2;
@@ -2044,14 +2037,9 @@ top(H) = Root(H)
 
 Same as the other two above operations, it's bound to $O(1)$ time.
 
-\begin{Exercise}
-Implement the insertion and top operation in your favorite programming
-language.
-\end{Exercise}
-
 \subsubsection{Decrease key of a node}
-\index{pairing heap!decrease key}
-There is another trivial operation, to decrease key of a given node,
+\index{Pairing heap!decrease key}
+There is another operation, to decrease key of a given node,
 which only makes sense in imperative settings as we explained in Fibonacci
 Heap section.
 
@@ -2068,9 +2056,10 @@ new key $k$.
   \State \Call{Key}{$x$} $\gets k$
   \If{\Call{Parent}{$x$} $\neq$ NIL}
     \State Remove $x$ from \textproc{Children}(\Call{Parent}{$x$})
+    \Call{Parent}{$x$} $\gets$ NIL
+    \State \Return \Call{Merge}{$H, x$}
   \EndIf
-  \Call{Parent}{$x$} $\gets$ NIL
-  \State \Return \Call{Merge}{$H, x$}
+  \State \Return $H$
 \EndFunction
 \end{algorithmic}
 
@@ -2078,12 +2067,14 @@ The following ANSI C program translates this algorithm.
 
 \lstset{language=C}
 \begin{lstlisting}
-struct node* decrease_key(struct node* h, struct node* x, Key key){
+struct node* decrease_key(struct node* h, struct node* x, Key key) {
   x->key = key; /* Assume key <= x->key */
-  if(x->parent)
+  if(x->parent) {
     x->parent->children = remove_node(x->parent->children, x);
-  x->parent = NULL;
-  return merge(h, x);
+    x->parent = NULL;
+    return merge(h, x);
+  }
+  return h;
 }
 \end{lstlisting}
 
@@ -2157,7 +2148,6 @@ The relative Haskell program of popping is given as the following.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-deleteMin :: (Ord a) => PHeap a -> PHeap a
 deleteMin (Node _ hs) = mergePairs hs where
     mergePairs [] = E
     mergePairs [h] = h
@@ -2195,15 +2185,15 @@ Below is the ANSI C program to this algorithm.
 
 \lstset{language=C}
 \begin{lstlisting}
-struct node* pop(struct node* h){
+struct node* pop(struct node* h) {
   struct node *x, *y, *lst = NULL;
-  while((x = h->children) != NULL){
-    if((h->children = y = x->next) != NULL)
+  while ((x = h->children) != NULL) {
+    if ((h->children = y = x->next) != NULL)
       h->children = h->children->next;
     lst = push_front(lst, merge(x, y));
   }
   x = NULL;
-  while((y = lst) != NULL){
+  while((y = lst) != NULL) {
     lst = lst->next;
     x = merge(x, y);
   }
@@ -2212,7 +2202,7 @@ struct node* pop(struct node* h){
 }
 \end{lstlisting}
 
-The pairing heap pop operation is conjectured to be amortized $O(\lg N)$
+The pairing heap pop operation is conjectured to be amortized $O(\lg n)$
 time \cite{pairing-heap}.
 
 \begin{Exercise}
@@ -2221,7 +2211,7 @@ in your favorite imperative programming language.
 \end{Exercise}
 
 \subsubsection{Delete a node}
-\index{pairing heap!delete}
+\index{Pairing heap!delete}
 We didn't mention delete in Binomial heap or Fibonacci Heap. Deletion
 can be realized by first decreasing key to minus infinity ($-\infty$), then
 performing pop. In this section, we present another solution for
@@ -2246,7 +2236,7 @@ delete(H, x) = \left \{
 \ee
 
 As delete algorithm uses pop, the performance is conjectured to be
-amortized $O(1)$ time.
+amortized $O(\lg n)$ time.
 
 \begin{Exercise}
 \begin{itemize}

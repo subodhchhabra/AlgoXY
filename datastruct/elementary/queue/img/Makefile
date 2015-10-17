@@ -24,7 +24,7 @@ xfig: $(FIG_OBJECTS)
 
 $(FIG_OBJECTS): % : %.eps
 
-# for details, refer to: 
+# for details, refer to:
 #    http://www.gnu.org/software/autoconf/manual/make/
 # Makefile syntax, replace each '%' to 'eps
 $(IMG_OBJECTS): % : %.eps
@@ -40,12 +40,12 @@ $(DOT_OBJECTS): % : %.ps
 
 # Makefile auto variable: $< first prerequisite, $@ target
 %.ps : %.dot
-	dot -Tps -o $@ $<
+	dot -Gsize="8,10.5" -Tps -o $@ $<
 
 png: $(PNG_OBJECTS)
 
 %.png : %.dot
-	dot -Tpng -o $@ $<
+	dot -Gsize="8,10.5" -Tpng -o $@ $<
 
 %.eps : %.fig
 	fig2dev -L eps -m 1.00 -c $< $@

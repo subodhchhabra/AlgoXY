@@ -68,7 +68,7 @@ Which support the following features
 
 \begin{itemize}
 \item Element can be inserted to or removed from the head of the sequence quickly in $O(1)$ time;
-\item Element can be inserted to or removed from the head of the sequence quickly in $O(1)$ time;
+\item Element can be inserted to or removed from the tail of the sequence quickly in $O(1)$ time;
 \item Support concatenate two sequences quickly (faster than linear time);
 \item Support randomly access and update any element quickly;
 \item Support split at any position quickly;
@@ -100,11 +100,11 @@ how they perform in different cases.
   \hline
   operation & Array & Linked-list \\
   \hline
-  operation on head & $O(N)$ & $O(1)$ \\
-  operation on tail & $O(1)$ & $O(N)$ \\
-  access at random position & $O(1)$ & average $O(N)$ \\
-  remove at given position & average $O(N)$ & $O(1)$ \\
-  concatenate & $O(N_2)$ & $O(N_1)$ \\
+  operation on head & $O(n)$ & $O(1)$ \\
+  operation on tail & $O(1)$ & $O(n)$ \\
+  access at random position & $O(1)$ & average $O(n)$ \\
+  remove at given position & average $O(n)$ & $O(1)$ \\
+  concatenate & $O(n_2)$ & $O(n_1)$ \\
   \hline
 \end{tabular}
 
@@ -126,10 +126,10 @@ second one to the end of the first one (ignore the memory re-allocation details)
 to the length of the second array.
 
 In the chapter about binomial heaps, we have explained the idea of using forest, which is a list of trees.
-It brings us the merit that, for any given number $N$, by representing it
+It brings us the merit that, for any given number $n$, by representing it
 in binary number, we know how many binomial trees need to hold them. That each bit of 1 represents a binomial
-tree of that rank of bit. We can go one step ahead, if we have a $N$ nodes binomial heap, for any given
-index $1 < i < N$, we can quickly know which binomial tree in the heap holds the $i$-th node.
+tree of that rank of bit. We can go one step ahead, if we have a $n$ nodes binomial heap, for any given
+index $1 < i < n$, we can quickly know which binomial tree in the heap holds the $i$-th node.
 
 \subsection{Represent sequence by trees}
 \index{Binary Random Access List!Definition}
@@ -152,20 +152,20 @@ For a complete binary tree, we define the depth as 0 if the tree has only a leaf
 The tree is denoted as as $t_i$ if its depth is $i+1$. It's obvious that there
 are $2^i$ leaves in $t_i$.
 
-For any sequence contains $N$ elements, it can be turned to a forest of complete binary trees in this manner.
-First we represent $N$ in binary number like below.
+For any sequence contains $n$ elements, it can be turned to a forest of complete binary trees in this manner.
+First we represent $n$ in binary number like below.
 
 \be
-N = 2^0 e_0 + 2^1 e_1 + ... + 2^M e_M
+n = 2^0 e_0 + 2^1 e_1 + ... + 2^m e_m
 \ee
 
-Where $e_i$ is either 1 or 0, so $N=(e_M e_{M-1} ... e_1 e_0)_2$. If $e_i \neq 0$, we then need a
-complete binary tree with size $2^i$,  For example in figure \ref{fig:bi-tree-sequence}, as the
+Where $e_i$ is either 1 or 0, so $n=(e_m e_{m-1} ... e_1 e_0)_2$. If $e_i \neq 0$, we then need a
+complete binary tree with size $2^i$.  For example in figure \ref{fig:bi-tree-sequence}, as the
 length of sequence is 6, which is $(110)_2$ in binary. The lowest bit is 0, so we needn't a tree
 of size 1; the second bit is 1, so we need a tree of size 2, which has depth of 2; the highest
 bit is also 1, thus we need a tree of size 4, which has depth of 3.
 
-This method represents the sequence $\{x_1, x_2, ..., x_N\}$ to a list of trees $\{t_0, t_1, ..., t_M\}$
+This method represents the sequence $\{x_1, x_2, ..., x_n\}$ to a list of trees $\{t_0, t_1, ..., t_m\}$
 where $t_i$ is either empty if $e_i = 0$ or a complete binary tree if $e_i = 1$.
 We call this representation as {\em Binary Random Access List} \cite{okasaki-book}.
 
@@ -203,7 +203,7 @@ in the forest as $t_i$, we can construct a new binary tree $t'_{i+1}$ by linking
 its left and right children. After that, we recursively try to insert $t'_{i+1}$ to the forest.
 \end{enumerate}
 
-Figure \ref{fig:bralist-1} and \ref{fig:bralist-2} illustrate the steps of inserting element $x_1, x_2, ..., x_6$ to an empty tree.
+Figure \ref{fig:bralist-1} and \ref{fig:bralist-2} illustrate the steps of inserting elements $x_1, x_2, ..., x_6$ to an empty forest.
 
 \begin{figure}[htbp]
   \centering
@@ -221,11 +221,11 @@ Figure \ref{fig:bralist-1} and \ref{fig:bralist-2} illustrate the steps of inser
   \caption{Steps of inserting elements to an empty list, 2} \label{fig:bralist-2}
 \end{figure}
 
-As there are at most $M$ trees in the forest, and $M$ is bound to $O(\lg N)$, so the insertion to
-head algorithm is ensured to perform in $O(\lg N)$ even in worst case. We'll prove the amortized
+As there are at most $M$ trees in the forest, and $m$ is bound to $O(\lg n)$, so the insertion to
+head algorithm is ensured to perform in $O(\lg n)$ even in worst case. We'll prove the amortized
 performance is $O(1)$ later.
 
-Let's formalize the algorithm to equations. we define the function of inserting an element in front of
+Let's formalize the algorithm. we define the function of inserting an element in front of
 a sequence as $insert(S, x)$.
 
 \be
@@ -240,7 +240,7 @@ is the rest of trees without the first one.
 insertTree(F, t) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \{ t \} & F = \Phi \\
+  \{ t \} & F = \phi \\
   \{ t \} \cup F & size(t) < size(t_1) \\
   insertTree(F', link(t, t_1)) & otherwise
   \end{array}
@@ -255,7 +255,7 @@ the right child, linking can be realized as below.
 link(t_1, t_2) = tree(size(t_1) + size(t_2), t_1, t_2)
 \ee
 
-The relative Haskell programs can be given by translating these equations.
+The relative Haskell programs can be given by translating these definitions.
 
 \begin{lstlisting}
 cons :: a -> BRAList a -> BRAList a
@@ -299,7 +299,7 @@ sequence.
 
 
 If we assume the sequence isn't empty, so that we can skip the error handling such as trying
-to remove an element from an empty sequence, this can be expressed with the following equation.
+to remove an element from an empty sequence, this can be expressed with the following definition.
 We denote the forest $F = \{t_1, t_2, ... \}$ and the trees without the first one as
 $F' = \{ t_2, t_3, ...\}$
 
@@ -322,7 +322,7 @@ extractTree (t@(Leaf x):ts) = (t, ts)
 extractTree (t@(Node _ t1 t2):ts) = extractTree (t1:t2:ts)
 \end{lstlisting}
 
-With this function defined, it's convenient to give $head()$ and $tail()$ functions, the former returns
+With this function defined, it's convenient to give $head$ and $tail$ functions, the former returns
 the first element in the sequence, the latter return the rest.
 
 \be
@@ -333,16 +333,16 @@ head(S) = key(first(extractTree(S)))
 tail(S) = second(extractTree(S))
 \ee
 
-Where function $first()$ returns the first element in a paired-value (as known as tuple);
-$second()$ returns the second element respectively. function $key()$ is used to access the
-element inside a leaf. Below are Haskell programs corresponding to these two equations.
+Where function $first$ returns the first element in a paired-value (as known as tuple);
+$second$ returns the second element respectively. Function $key$ is used to access the
+element inside a leaf. Below are Haskell programs corresponding to these two functions.
 
 \begin{lstlisting}
 head' ts = x where (Leaf x, _) = extractTree ts
 tail' = snd . extractTree
 \end{lstlisting}
 
-Note that as \verb|head| and \verb|tail| functions have already been defined in Haskell standard
+Note that as \texttt{head} and \texttt{tail} functions have already been defined in Haskell standard
 library, we given them apostrophes to make them distinct. (another option is to hide
 the standard ones by importing. We skip the details as they are language specific).
 
@@ -384,7 +384,7 @@ Where $|T| = size(T)$, and $S' = \{ T_2, T_3, ... \}$ is the rest of trees witho
 forest. Note that we don't handle out of bound error case, this is left as an exercise
 to the reader.
 
-Function $lookupTree()$ is just a binary search algorithm, if the index $i$ is 1, we just return the root
+Function $lookupTree$ is a binary search algorithm. If the index $i$ is 1, we just return the root
 of the tree, otherwise, we halve the tree by unlinking, if $i$ is less than or equal to the size
 of the halved tree, we recursively look up the left tree, otherwise, we
 look up the right tree.
@@ -400,7 +400,7 @@ lookupTree(T, i) = \left \{
 \right .
 \ee
 
-Where function $left()$ returns the left tree $T_l$ of $T$, while $right()$ returns $T_r$.
+Where function $left$ returns the left tree $T_l$ of $T$, while $right$ returns $T_r$.
 
 The corresponding Haskell program is given as below.
 
@@ -481,12 +481,12 @@ updateTree (Node sz t1 t2) i x =
     else Node sz t1 (updateTree t2 (i - sz `div` 2) x)
 \end{lstlisting}
 
-As the nature of complete binary search tree, for a sequence with $N$ elements, which
+As the nature of complete binary tree, for a sequence with $n$ elements, which
 is represented by binary random
-access list, the number of trees in the forest is bound to $O(\lg N)$. Thus it takes
-$O(\lg N)$ time to locate the tree for arbitrary index $i$, that contains the element.
-the followed tree search is bound to the heights of the tree, which is $O(\lg N)$ as well.
-So the total performance of random access is $O(\lg N)$.
+access list, the number of trees in the forest is bound to $O(\lg n)$. Thus it takes
+$O(\lg n)$ time to locate the tree for arbitrary index $i$, that contains the element in the worst case.
+The followed tree search is bound to the heights of the tree, which is $O(\lg n)$ in the worst case as well.
+So the total performance of random access is $O(\lg n)$.
 
 \begin{Exercise}
 \begin{enumerate}
@@ -503,19 +503,19 @@ programming language.
 \end{Exercise}
 
 \section{Numeric representation for binary random access list}
-\index{Sequence!numeric representation for binary access list}
-In previous section, we mentioned that for any sequence with $N$ elements, we can
-represent $N$ in binary format so that $N = 2^0e_0 + 2^1e_1 + ... + 2^Me_M$. Where $e_i$
+\index{Sequence!numeric representation for binary random access list}
+In previous section, we mentioned that for any sequence with $n$ elements, we can
+represent $n$ in binary format so that $n = 2^0e_0 + 2^1e_1 + ... + 2^me_m$. Where $e_i$
 is the $i$-th bit, which can be either 0 or 1. If $e_i \neq 0$ it means that there is
 a complete binary tree with size $2^i$.
 
 This fact indicates us that there is an explicit relationship between the binary
-form of $N$ and the forest. Insertion a new element on the head can be simulated
+form of $n$ and the forest. Insertion a new element on the head can be simulated
 by increasing the binary number by one; while remove an element from the head mimics
 the decreasing of the corresponding binary number by one. This is as known as
 {\em numeric representation} \cite{okasaki-book}.
 
-In order to represent the binary access list with binary number, we can define two
+In order to represent the binary random access list with binary number, we can define two
 states for a bit. That $Zero$ means there is no such a tree with size which is corresponding
 to the bit, while $One$, means such tree exists in the forest. And we can attach
 the tree with the state if it is $One$.
@@ -544,7 +544,7 @@ one removed.
 insertTree(S, t) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \{ one(t) \} & S = \Phi \\
+  \{ one(t) \} & S = \phi \\
   \{ one(t) \} \cup S' & s_1 = Zero \\
   \{ Zero \} \cup insertTree(S', link(t, getTree(s_1))) & otherwise
   \end{array}
@@ -606,7 +606,7 @@ illustrated this algorithm.
 extractTree(S) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (t, \Phi) & S = \{ one(t) \} \\
+  (t, \phi) & S = \{ one(t) \} \\
   (t, S') & s_1 = one(t) \\
   (t_l, \{ one(t_r) \} \cup S'' & otherwise
   \end{array}
@@ -614,7 +614,7 @@ extractTree(S) = \left \{
 \ee
 
 Where $(t', S'') = extractTree(S')$, $t_l$ and $t_r$ are left and right
-sub-trees of $t'$. All other functions, including $head()$, $tail()$ are
+sub-trees of $t'$. All other functions, including $head$, $tail$ are
 as same as before.
 
 Numeric representation doesn't change the performance of binary random
@@ -622,7 +622,7 @@ access list, readers can refer to \cite{okasaki-ralist} for detailed
 discussion. Let's take for example, analyze the average performance (or amortized) of insertion
 on head algorithm by using aggregation analysis.
 
-Considering the process of inserting $N = 2^m$ elements to an empty binary random access list.
+Considering the process of inserting $n = 2^m$ elements to an empty binary random access list.
 The numeric representation of the forest can be listed as the following.
 
 \begin{tabular}{l | r}
@@ -648,7 +648,7 @@ the forest changed only one time which links all previous trees to a big tree
 as the only one in the forest. This happens at the half time of the total
 insertion process, and after the last element is inserted, the MSB flips to 1.
 
-Sum these costs up yield to the total cost $T = 1 + 1 + 2 + 3 + ... + 2^{m_1} + 2^m = 2^{m+1}$
+Sum these costs up yield to the total cost $T = 1 + 1 + 2 + 4 + ... + 2^{m-1} + 2^m = 2^{m+1}$
 So the average cost for one insertion is
 
 \be
@@ -658,10 +658,10 @@ O(T/N) = O(\frac{2^{m+1}}{2^m}) = O(1)
 Which proves that the insertion algorithm performs in amortized $O(1)$ constant time.
 The proof for deletion are left as an exercise to the reader.
 
-\subsection{Imperative binary access list}
-\index{Sequence!Imperative binary access list}
+\subsection{Imperative binary random access list}
+\index{Sequence!Imperative binary random access list}
 
-It's trivial to implement the binary access list by using binary trees, and the
+It's trivial to implement the imperative binary random access list by using binary trees, and the
 recursion can be eliminated by updating the focused tree in loops. This is left
 as an exercise to the reader. In this section, we'll show some different imperative
 implementation by using the properties of numeric representation.
@@ -701,8 +701,7 @@ struct List {
 };
 \end{lstlisting}
 
-For illustration purpose only, we use ANSI C here, readers can find the complete ISO C++
-example programs along with this book.
+For illustration purpose only, we use ANSI C here\footnote{The complete ISO C++ example program is available with this book.}.
 
 Let's review the insertion process, if the first tree is empty (a $Zero$ digit), we simply
 set the first tree as a leaf of the new element to be inserted; otherwise, the insertion
@@ -715,26 +714,26 @@ this new created tree. What's more, all trees after position $i$ are kept as sam
 as before.
 
 Is there any good methods to locate this $i$ position? As we can use binary number
-to represent the forest of $N$ element, after a new element is inserted, $N$
-increases to $N+1$. Compare the binary form of $N$ and $N+1$, we find that
+to represent the forest of $n$ element, after a new element is inserted, $n$
+increases to $n+1$. Compare the binary form of $n$ and $n+1$, we find that
 all bits before $i$ change from 1 to 0, the $i$-th bit flip from 0 to 1, and
 all the bits after $i$ keep unchanged. So we can use bit-wise exclusive or ($\oplus$) to detect
 this bit. Here is the algorithm.
 
 \begin{algorithmic}
-\Function{Number-Of-Bits}{$N$}
+\Function{Number-Of-Bits}{$n$}
   \State $i \gets 0$
-  \While{$\lfloor \frac{N}{2} \rfloor \neq 0$}
-    \State $ N \gets \lfloor \frac{N}{2} \rfloor$
+  \While{$\lfloor \frac{n}{2} \rfloor \neq 0$}
+    \State $ n \gets \lfloor \frac{n}{2} \rfloor$
     \State $ i \gets i + 1$
   \EndWhile
   \State \Return $i$
 \EndFunction
 \Statex
-\State $i \gets $ \Call{Number-Of-Bits}{$N \oplus (N + 1)$}
+\State $i \gets $ \Call{Number-Of-Bits}{$n \oplus (n + 1)$}
 \end{algorithmic}
 
-And it can be easily implemented with bit shifting, for example the below ANSI C
+The \textproc{Number-Of-Bits} process can be easily implemented with bit shifting, for example the below ANSI C
 code.
 
 \begin{lstlisting}
@@ -753,7 +752,7 @@ as the new element to be inserted.
 
 \begin{algorithmic}
 \Function{Insert}{$L, x$}
-  \State $i \gets $ \Call{Number-Of-Bits}{$N \oplus (N + 1)$}
+  \State $i \gets $ \Call{Number-Of-Bits}{$n \oplus (n + 1)$}
   \State \Call{Tree}{$L$}[$i+1$] $\gets $ \Call{Create-Array}{$2^i$}
   \State $l \gets 1$
   \State  \Call{Tree}{$L$}[$i+1$][$l$]  $\gets x$
@@ -775,10 +774,10 @@ The corresponding ANSI C program is given as the following.
 struct List insert(struct List a, Key x) {
   int i, j, sz;
   Key* xs;
-  i = nbits( (a.n+1) ^ a.n );
-  xs = a.tree[i] = (Key*)malloc(sizeof(Key)*(1<<i));
-  for(j=0, *xs++ = x, sz = 1; j<i; ++j, sz <<= 1) {
-    memcpy((void*)xs, (void*)a.tree[j], sizeof(Key)*(sz));
+  i = nbits((a.n + 1) ^ a.n );
+  xs = a.tree[i] = (Key*)malloc(sizeof(Key)*(1 << i));
+  for(j = 0, *xs++ = x, sz = 1; j < i; ++j, sz << = 1) {
+    memcpy((void*)xs, (void*)a.tree[j], sizeof(Key) * (sz));
     xs += sz;
     free(a.tree[j]);
     a.tree[j] = NULL;
@@ -789,10 +788,10 @@ struct List insert(struct List a, Key x) {
 \end{lstlisting}
 
 However, the performance in theory isn't as good as before. This is because the
-linking operation downgrade from $O(1)$ constant time to linear array copying.
+linking operation downgrades from $O(1)$ constant time to linear array copying.
 
 We can again calculate the average (amortized) performance by using aggregation
-analysis. When insert $N = 2^m$ elements to an empty list which is represented
+analysis. When insert $n = 2^m$ elements to an empty list which is represented
 by implicit binary trees in arrays, the numeric presentation of the forest of
 arrays are as same as before except for the cost of bit flipping.
 
@@ -814,26 +813,26 @@ arrays are as same as before except for the cost of bit flipping.
 
 The LSB of the forest changed every time when there is a new element inserted, however,
 it creates leaf tree and performs copying only it changes from 0 to 1, so the
-cost is half of $N$ unit, which is $2^{m-1}$;
+cost is half of $n$ unit, which is $2^{m-1}$;
 The next bit flips as half as the LSB. Each time the bit
 gets flipped to 1, it copies the first tree as well as the new element to the second tree.
 the the cost of flipping a bit to 1 in this bit is 2 units, but not 1; For the MSB, it only
 flips to 1 at the last time, but the cost of flipping this bit, is copying all the previous
 trees to fill the array of size $2^m$.
 
-Summing all to cost and distributing them to the $N$ times of insertion yields the
+Summing all to cost and distributing them to the $n$ times of insertion yields the
 amortized performance as below.
 
 \be
 \begin{array}{rcl}
-O(T/N) & = & O(\frac{1 \times 2^m + 1 \times 2^{m-1} + 2 \times 2^{m-2} + ... + 2^{m-1} \times 1}{2^m}) \\
-       & = & O(1 + \frac{m}{2}) \\
+O(T/N) & = & \displaystyle O(\frac{1 \times 2^m + 1 \times 2^{m-1} + 2 \times 2^{m-2} + ... + 2^{m-1} \times 1}{2^m}) \\
+       & = & \displaystyle O(1 + \frac{m}{2}) \\
        & = & O(m)
 \end{array}
 \ee
 
-As $m = O(\lg N)$, so the amortized performance downgrade from constant time to logarithm,
-although it is still faster than the normal array insertion which is $O(N)$ in average.
+As $m = O(\lg n)$, so the amortized performance downgrade from constant time to logarithm,
+although it is still faster than the normal array insertion which is $O(n)$ in average.
 
 The random accessing gets a bit faster because we can use array indexing instead of tree
 search.
@@ -858,7 +857,7 @@ of this algorithm is like the following.
 \begin{lstlisting}
 Key get(struct List a, int i) {
   int j, sz;
-  for(j = 0, sz = 1; j < M; ++j, sz <<= 1)
+  for(j = 0, sz = 1; j < M; ++j, sz << = 1)
     if(a.tree[j]) {
       if(i < sz)
 	break;
@@ -889,8 +888,8 @@ favorite imperative programming language.
 
 \subsection{Definition}
 \index{Paired-array list!Definition}
-In previous chapter about queue, a symmetric solution of paired-array is presented.
-It is capable to operate on both ends of the list. Because the nature that array supports
+In previous chapter about queue, a symmetric solution, naming paired-array is presented.
+It is capable to operate on both ends of the queue. Because the nature that array supports
 fast random access. It can be also used to realize a fast random access sequence
 in imperative setting.
 
@@ -900,9 +899,9 @@ in imperative setting.
   \caption{A paired-array list, which is consist of 2 arrays linking in head-head manner.} \label{fig:palist}
 \end{figure}
 
-Figure \ref{fig:palist} shows the design of paired-array list. Tow arrays are linked in head-head manner.
-To insert a new element on the head of the sequence, the element is appended at the end of front list;
-To append a new element on the tail of the sequence, the element is appended at the end of rear list;
+Figure \ref{fig:palist} shows the design of paired-array list. Two arrays are linked in head-head manner.
+To insert a new element on the head of the sequence, the element is appended at the end of front array;
+To append a new element on the tail of the sequence, the element is appended at the end of rear array;
 
 Here is a ISO C++ code snippet to define the this data structure.
 
@@ -966,16 +965,16 @@ by nature, it's trivial to implement constant time indexing algorithm.
 \begin{algorithmic}
 \Function{Get}{$L, i$}
   \State $F \gets $ \Call{Front}{$L$}
-  \State $N \gets $ \Call{Size}{$F$}
-  \If{$i \leq N $}
-    \State \Return $F$[$N-i+1$]
+  \State $n \gets $ \Call{Size}{$F$}
+  \If{$i \leq n $}
+    \State \Return $F$[$n-i+1$]
   \Else
-    \State \Call{Rear}{$L$}[$i-N$]
+    \State \Return \Call{Rear}{$L$}[$i-n$]
   \EndIf
 \EndFunction
 \end{algorithmic}
 
-Here the index $i \in [1, |L|]$ starts from 1. If it is not greater than the size of front
+Here the index $i \in [1, |L|]$. If it is not greater than the size of front
 array, the element is stored in front. However, as front and rear arrays are connect head-to-head,
 so the elements in front array are in reverse order. We need locate the element by subtracting
 the size of front array by $i$; If the index $i$ is greater than the size of front array,
@@ -1010,13 +1009,13 @@ is described as the following.
 \begin{algorithmic}
 \Function{Balance}{$L$}
   \State $F \gets$ \Call{Front}{$L$}, $R \gets$ \Call{Rear}{$L$}
-  \State $N \gets$ \Call{Size}{$F$}, $M \gets$ \Call{Size}{$R$}
-  \If{ $F = \Phi$}
-    \State $F \gets$ \Call{Reverse}{$R$[1 ... $\lfloor \frac{M}{2} \rfloor$]}
-    \State $R \gets R[\lfloor \frac{M}{2} \rfloor + 1 ... M]$
-  \ElsIf{ $R = \Phi$ }
-    \State $R \gets$ \Call{Reverse}{$F$[1 ... $\lfloor \frac{N}{2} \rfloor$]}
-    \State $F \gets F[\lfloor \frac{N}{2} \rfloor + 1 ... N]$
+  \State $n \gets$ \Call{Size}{$F$}, $m \gets$ \Call{Size}{$R$}
+  \If{ $F = \phi$}
+    \State $F \gets$ \Call{Reverse}{$R$[1 ... $\lfloor \frac{m}{2} \rfloor$]}
+    \State $R \gets R[\lfloor \frac{m}{2} \rfloor + 1$ ... $m]$
+  \ElsIf{ $R = \phi$ }
+    \State $R \gets$ \Call{Reverse}{$F$[1 ... $\lfloor \frac{n}{2} \rfloor$]}
+    \State $F \gets F[\lfloor \frac{n}{2} \rfloor + 1$ ... $n]$
   \EndIf
 \EndFunction
 \end{algorithmic}
@@ -1035,8 +1034,7 @@ void balance(List<Key>& xs) {
     xs.rear.erase(xs.rear.begin(), xs.rear.begin() +xs.m/2);
     xs.n = xs.m/2;
     xs.m -= xs.n;
-  }
-  else if(xs.m == 0) {
+  } else if(xs.m == 0) {
     swap(xs.front, xs.rear);
     swap(xs.n, xs.m);
     balance(xs);
@@ -1053,7 +1051,7 @@ both on head and on tail.
 \Function{Remove-Head}{$L$}
   \State \Call{Balance}{$L$}
   \State $F \gets $ \Call{Front}{$L$}
-  \If{$F = \Phi$}
+  \If{$F = \phi$}
     \State \Call{Remove-Tail}{$L$}
   \Else
     \State \Call{Size}{$F$} $\gets $ \Call{Size}{$F$} - 1
@@ -1063,7 +1061,7 @@ both on head and on tail.
 \Function{Remove-Tail}{$L$}
   \State \Call{Balance}{$L$}
   \State $R \gets $ \Call{Rear}{$L$}
-  \If{$R = \Phi$}
+  \If{$R = \phi$}
     \State \Call{Remove-Head}{$L$}
   \Else
     \State \Call{Size}{$R$} $\gets $ \Call{Size}{$R$} - 1
@@ -1101,7 +1099,7 @@ void remove_tail(List<Key>& xs) {
 }
 \end{lstlisting}
 
-It's obvious that the worst case performance is $O(N)$ where $N$ is the number of elements
+It's obvious that the worst case performance is $O(n)$ where $n$ is the number of elements
 stored in paired-array list. This happens when balancing is triggered, and both reverse
 and shifting are linear operation. However, the amortized performance of removal is still
 $O(1)$, the proof is left as exercise to the reader.
@@ -1119,7 +1117,7 @@ consider how does this affect the performance?
 \section{Concatenate-able list}
 \index{Sequence!Concatenate-able list}
 By using binary random access list, we realized sequence data structure which
-supports $O(\lg N)$ time insertion and removal on head, as well as random accessing element
+supports $O(\lg n)$ time insertion and removal on head, as well as random accessing element
 with a given index.
 
 However, it's not so easy to concatenate two lists. As both lists are forests of
@@ -1134,17 +1132,17 @@ stack can be implicitly used in recursion manner, for instance:
 concat(s_1, s_2) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  s_2 & s_1 = \Phi \\
+  s_2 & s_1 = \phi \\
   cons(head(s_1), concat(tail(s_1), s_2)) & otherwise
   \end{array}
 \right .
 \ee
 
-Where function $cons()$, $head()$ and $tail()$ are defined in previous section.
+Where function $cons$, $head$ and $tail$ are defined in previous section.
 
-If the length of the two sequence is $N$, and $M$, this method takes $O(N \lg N)$
+If the length of the two sequence is $n$, and $m$, this method takes $O(N \lg n)$
 time repeatedly push all elements from the first sequence to stacks, and then
-takes $\Omega(N \lg (N + M))$ to insert the elements in front of the second sequence.
+takes $\Omega(n \lg (n + m))$ to insert the elements in front of the second sequence.
 Note that $\Omega$ means the upper limit, There is detailed definition for it in
 \cite{CLRS}.
 
@@ -1177,7 +1175,7 @@ Haskell code.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
-data CList a = Empty | CList a (Queue (CList a)) deriving (Show, Eq)
+data CList a = Empty | CList a (Queue (CList a))
 \end{lstlisting}
 
 It means that a concatenate-able list is either empty or a K-ary tree, which
@@ -1196,8 +1194,8 @@ to concatenate two lists like this.
 concat(s_1, s_2) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  s_1 & s_2 = \Phi \\
-  s_2 & s_1 = \Phi \\
+  s_1 & s_2 = \phi \\
+  s_2 & s_1 = \phi \\
   clist(x, push(Q, s_2)) & otherwise
   \end{array}
 \right .
@@ -1211,7 +1209,7 @@ child to the queue of the first list.
 Since the push operation is $O(1)$ constant time for a well realized
 real-time queue, the performance of concatenation is bound to $O(1)$.
 
-The $concat()$ function can be translated to the below Haskell program.
+The $concat$ function can be translated to the below Haskell program.
 
 \begin{lstlisting}
 concat x Empty = x
@@ -1223,11 +1221,18 @@ Besides the good performance of concatenation, this design also brings
 satisfied features for adding element both on head and tail.
 
 \be
-cons(x, s) = concat(clist(x, \Phi), s)
+cons(x, s) = concat(clist(x, \phi), s)
 \ee
 
 \be
-append(s, x) = concat(s, clist(x, \Phi))
+append(s, x) = concat(s, clist(x, \phi))
+\ee
+
+Getting the first element is just returning the root
+of the K-ary tree.
+
+\be
+head(s) = root(s)
 \ee
 
 It's a bit complex to realize the algorithm that removes the first
@@ -1236,15 +1241,7 @@ which is the first element in the sequence got removed, we have to
 re-construct the rest things, a queue of sub-lists, to a K-ary
 tree.
 
-Before diving into the re-construction, let's solve the trivial
-part first. Getting the first element is just returning the root
-of the K-ary tree.
-
-\be
-head(s) = root(s)
-\ee
-
-As we mentioned above, after root being removed, there left
+After the root being removed, there left
 all children of the K-ary tree. Note that all of them are also
 concatenate-able list, so that one natural solution is to
 concatenate them all together to a big list.
@@ -1253,14 +1250,14 @@ concatenate them all together to a big list.
 concatAll(Q) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & Q = \Phi \\
+  \phi & Q = \phi \\
   concat(front(Q), concatAll(pop(Q))) & otherwise
   \end{array}
 \right .
 \ee
 
-Where function $front()$ just returns the first element from a
-queue without removing it, while $pop()$ does the removing work.
+Where function $front$ just returns the first element from a
+queue without removing it, while $pop$ does the removing work.
 
 If the queue is empty, it means that there is no children at all, so
 the result is also an empty list; Otherwise, we pop the first child,
@@ -1268,7 +1265,7 @@ which is a concatenate-able list, from the queue, and recursively
 concatenate all the rest children to a list; finally, we concatenate this list
 behind the already popped first children.
 
-With $concatAll()$ defined, we can then implement the algorithm
+With $concatAll$ defined, we can then implement the algorithm
 of removing the first element from a list as below.
 
 \be
@@ -1285,11 +1282,11 @@ linkAll q | isEmptyQ q = Empty
           | otherwise = link (front q) (linkAll (pop q))
 \end{lstlisting}
 
-Function \verb|isEmptyQ| is used to test a queue is empty, it is trivial and
+Function \texttt{isEmptyQ} is used to test a queue is empty, it is trivial and
 we omit its definition. Readers can refer to the source code along with
 this book.
 
-$linkAll()$ algorithm actually traverses the queue data structure,
+$linkAll$ algorithm actually traverses the queue data structure,
 and reduces to a final result. This remind us of {\em folding} mentioned
 in the chapter of binary search tree. readers can refer to the
 appendix of this book for the detailed description of folding.
@@ -1303,13 +1300,13 @@ it's easy to support folding on a customized data structure.}
 foldQ(f, e, Q) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  e & Q = \Phi \\
+  e & Q = \phi \\
   f(front(Q), foldQ(f, e, pop(Q))) & otherwise
   \end{array}
 \right .
 \ee
 
-Function $foldQ()$ takes three parameters, a function $f$, which is used
+Function $foldQ$ takes three parameters, a function $f$, which is used
 for reducing, an initial value $e$, and the queue $Q$ to be traversed.
 
 Here are some examples to illustrate folding on queue. Suppose
@@ -1326,7 +1323,7 @@ foldQ(\times, 0, Q) = 1 \times (2 \times (3 \times (4 \times (5 \times 0)))) = 0
 Function $linkAll$ can be changed by using $foldQ$ accordingly.
 
 \be
-linkAll(Q) = foldQ(link, \Phi, Q)
+linkAll(Q) = foldQ(link, \phi, Q)
 \ee
 
 The Haskell program can be modified as well.
@@ -1340,14 +1337,14 @@ foldQ f z q | isEmptyQ q = z
 \end{lstlisting}
 
 However, the performance of removing can't be ensured in all cases.
-The worst case is that, user keeps appending $N$ elements to a empty
+The worst case is that, user keeps appending $n$ elements to a empty
 list, and then immediately performs removing. At this time, the K-ary
-tree has the first element stored in root. There are $N-1$ children,
-all are leaves. So $linkAll()$ algorithm downgrades to $O(N)$ which
+tree has the first element stored in root. There are $n-1$ children,
+all are leaves. So $linkAll()$ algorithm downgrades to $O(n)$ which
 is linear time.
 
-The average case is amortized $O(1)$, if the add, append, concatenate
-and removing operations are randomly performed. The proof is left as
+Considering the add, append, concatenate and removing operations are randomly performed.
+The average case is amortized $O(1)$, The proof is left as
 en exercise to the reader.
 
 \begin{Exercise}
@@ -1355,7 +1352,7 @@ en exercise to the reader.
 \item Can you figure out a solution to append an element to the end of a binary
 random access list?
 
-\item Prove that the amortized performance of removal operation is
+\item Prove that the amortized performance of removal operation for concatenate-able list is
 $O(1)$. Hint: using the banker's method.
 
 \item Implement the concatenate-able list in your favorite imperative language.
@@ -1373,7 +1370,7 @@ of this chapter.
 Binary random access list enables to insert, remove element
 on the head of sequence, and random access elements fast. However, it performs
 poor when concatenates lists. There is no good way to append element at the
-end of binary access list.
+end of binary random access list.
 
 Concatenate-able list is capable to concatenates multiple lists in a fly, and
 it performs well for adding new element both on head and tail. However, it doesn't
@@ -1421,8 +1418,8 @@ union Node {
 Note in this definition, a node can either contain $2 \sim 3$ keys, or $2 \sim 3$ sub nodes.
 Where key is the type of elements stored in leaf node.
 
-We mark the left-most none-leaf node as the front finger and the right-most
-none-leaf node as the rear finger. Since both fingers are essentially
+We mark the left-most none-leaf node as the front finger (or left finger) and the right-most
+none-leaf node as the rear finger (or right finger). Since both fingers are essentially
 2-3 trees with all leafs as children, they can be directly represented as
 list of 2 or 3 leafs. Of course a finger tree can be empty or contain
 only one element as leaf.
@@ -1463,7 +1460,7 @@ struct Tree {
 \end{lstlisting}
 
 We can use NIL pointer to represent an empty tree; and a leaf tree contains only one element
-in its front finger, both its rear finger and middle part are empty;
+in its front finger, both its rear finger and middle part are empty.
 
 Figure \ref{fig:ftr-example-1} and \ref{fig:ftr-example-2} show some examples
 of figure tree.
@@ -1487,7 +1484,7 @@ of figure tree.
 The first example is an empty finger tree; the second one shows the result after
 inserting one element to empty, it becomes a leaf of one node; the third example
 shows a finger tree contains 2 elements, one is in front finger, the other is
-in rear;
+in rear.
 
 If we continuously insert new elements, to the tree, those elements will be
 put in the front finger one by one, until it exceeds the limit of 2-3 tree.
@@ -1496,7 +1493,7 @@ finger, which isn't balanced any more.
 
 The last example shows that the finger tree gets fixed so that it resumes
 balancing. There are two elements in the front finger. Note that the middle
-part is not empty any longer. It's a leaf of a 2-3 tree. The content of the
+part is not empty any longer. It's a {\em leaf} of a 2-3 tree (why it's a leaf is explained later). The content of the
 leaf is a tree with 3 branches, each contains an element.
 
 We can express these 5 examples as the following Haskell expression.
@@ -1510,13 +1507,14 @@ Lf a
 [f, e] Lf (Br3 d c b) [a]
 \end{lstlisting}
 
+In the last example, why the middle part inner tree is a leaf?
 As we mentioned that the definition of finger tree is recursive.
 The middle part besides the front and rear finger is a deeper finger tree,
 which is defined as $Tree(Node(a))$. Every time we go deeper, the
-$Node()$ is embedded one more level. if the element type of the first level tree
+$Node$ is embedded one more level. if the element type of the first level tree
 is $a$, the element type for the second level tree is $Node(a)$,
 the third level is $Node(Node(a))$, ..., the n-th level is
-$Node(Node(Node(...(a))...)) = Node^n(a)$, where $^n$ indicates the $Node()$
+$Node(Node(Node(...(a))...)) = Node^n(a)$, where $^n$ indicates the $Node$
 is applied $n$ times.
 
 \subsection{Insert element to the head of sequence}
@@ -1547,8 +1545,8 @@ $a$ and $b$.
 insertT(x, T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  leaf(x) & T = \Phi \\
-  tree(\{x\}, \Phi, \{y\}) & T = leaf(y) \\
+  leaf(x) & T = \phi \\
+  tree(\{x\}, \phi, \{y\}) & T = leaf(y) \\
   tree(\{x, x_1\}, insertT(tr3(x_2, x_3, x_4), T'), R) & T = tree(\{x_1, x_2, x_3, x_4\}, T', R) \\
   tree(\{x\} \cup F, T', R) & otherwise
   \end{array}
@@ -1559,9 +1557,9 @@ The performance of this algorithm is dominated by the recursive case. All the
 other cases are constant $O(1)$ time. The recursion depth is proportion to
 the height of the tree, so the algorithm is bound to $O(h)$ time, where $h$ is
 the height. As we use 2-3 tree to ensure that the tree is well balanced,
-$h = O(\lg N)$, where $N$ is the number of elements stored in the finger tree.
+$h = O(\lg n)$, where $n$ is the number of elements stored in the finger tree.
 
-More analysis reveal that the amortized performance of $insertT()$ is $O(1)$
+More analysis reveal that the amortized performance of $insertT$ is $O(1)$
 because we can amortize the expensive recursion case to other trivial cases.
 Please refer to \cite{okasaki-book} and \cite{finger-tree-2006} for the detailed proof.
 
@@ -1599,7 +1597,7 @@ Function \textproc{Node}() creates an empty node.
   \If{$T =$ NIL}
     \State $T \gets$ \textproc{Tree}()
     \State \Call{Front}{$T$}$\gets \{ n \}$
-  \ElsIf{ $|$ \Call{Front}{$T$} $|$ = 1 $\land$ \Call{Rear}{$T$} = $\Phi$}
+  \ElsIf{ $|$ \Call{Front}{$T$} $|$ = 1 $\land$ \Call{Rear}{$T$} = $\phi$}
     \State \Call{Rear}{$T$} $\gets$ \Call{Front}{$T$}
     \State \Call{Front}{$T$} $\gets \{ n \}$
   \Else
@@ -1611,11 +1609,11 @@ Function \textproc{Node}() creates an empty node.
 \end{algorithmic}
 
 Where the notation $L[i..]$ means a sub list of $L$ with the first $i-1$
-elements removed, that if $L = \{a_1, a_2, ..., a_n\}$, $L[i..] = \{a_i, a_{i+1}, ..., a_n\}$.
+elements removed, that if $L = \{a_1, a_2, ..., a_n\}$, then $L[i..] = \{a_i, a_{i+1}, ..., a_n\}$.
 
-Functions \textproc{Front}(), \textproc{Rear}(), \textproc{Mid}(), and \textproc{Parent}()
+Functions \textproc{Front}, \textproc{Rear}, \textproc{Mid}, and \textproc{Parent}
 are used to access the front finger, the rear finger, the middle part inner tree and
-the parent tree respectively; Function \textproc{Children}() accesses the children of a
+the parent tree respectively; Function \textproc{Children} accesses the children of a
 node.
 
 Function \textproc{Connect-Mid}($T_1, T_2$), connect $T_2$ as the inner middle part tree of
@@ -1636,7 +1634,7 @@ perform a trivial list insert to the front finger for the latter.
 During the traversal, we use $p$ to record the parent of the current tree we are processing.
 So any new created tree are connected as the middle part inner tree to $p$.
 
-Finally, we return the root of the tree $r$. The last trick of this algorithm is the \textproc{Flat}()
+Finally, we return the root of the tree $r$. The last trick of this algorithm is the \textproc{Flat}
 function. In order to simplify the logic, we create an empty `ground' tree and set
 it as the parent of the root. We need eliminate this extra `ground' level before return the
 root. This flatten algorithm is realized as the following.
@@ -1646,14 +1644,14 @@ root. This flatten algorithm is realized as the following.
   \While{$T \neq$ NIL $\land T$ is empty}
     \State $T \gets$ \Call{Mid}{$T$}
   \EndWhile
-  \If{$T \neq \Phi$}
-    \State \Call{Parent}{$T$} $\gets \Phi$
+  \If{$T \neq$ NIL}
+    \State \Call{Parent}{$T$} $\gets$ NIL
   \EndIf
   \State \Return $T$
 \EndFunction
 \end{algorithmic}
 
-The while loop test if $T$ is trivial empty, that it's not NIL($=\Phi$), while both its front
+The while loop test if $T$ is trivial empty, that it's not NIL($=\phi$), while both its front
 and rear fingers are empty.
 
 Below Python code implements the insertion algorithm for finger tree.
@@ -1689,8 +1687,8 @@ def flat(t):
     return t
 \end{lstlisting}
 
-The implementation of function '\verb|set_mid()|', '\verb|frontFull()|', '\verb|wrap()|',
-'\verb|wraps()|', '\verb|empty()|', and tree
+The implementation of function \texttt{set\_mid}, \texttt{frontFull}, \texttt{wrap},
+\texttt{wraps}, \texttt{empty}, and tree
 constructor are trivial enough, that we skip the detail of them here. Readers can take these as
 exercises.
 
@@ -1711,9 +1709,9 @@ removed from $R$.
 extractT(T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (x, \Phi) & T = leaf(x) \\
-  (x, leaf(y)) & T = tree(\{x\}, \Phi, \{y\}) \\
-  (x, tree(\{r_1\}, \Phi, R')) & T = tree(\{x\}, \Phi, R) \\
+  (x, \phi) & T = leaf(x) \\
+  (x, leaf(y)) & T = tree(\{x\}, \phi, \{y\}) \\
+  (x, tree(\{r_1\}, \phi, R')) & T = tree(\{x\}, \phi, R) \\
   (x, tree(toList(F'), M', R)) & T = tree(\{x\}, M, R), (F', M') = extractT(M)\\
   (f_1, tree(\{f_2, f_3, ...\}, M, R)) & otherwise
   \end{array}
@@ -1736,7 +1734,7 @@ toList(T) = \left \{
 Here we skip the error handling such as trying to remove element from
 empty tree etc. If the finger tree is a leaf, the result after removal
 is an empty tree; If the finger tree contains two elements, one in the
-front rear, the other in rear, we return the element stored in front rear
+front finger, the other in rear, we return the element stored in front finger
 as the first element, and the resulted tree after removal is a leaf;
 If there is only one element in front finger, the middle part inner tree
 is empty, and the rear finger isn't empty, we return the only element
@@ -1778,7 +1776,7 @@ uncons (Tr [a] m r) = (a, Tr (nodeToList f) m' r) where (f, m') = uncons m
 uncons (Tr f m r) = (head f, Tr (tail f) m r)
 \end{lstlisting}
 
-And the function $nodeToList$ is defined like this.
+And the function \texttt{nodeToList} is defined like this.
 
 \begin{lstlisting}
 nodeToList :: Node a -> [a]
@@ -1786,8 +1784,8 @@ nodeToList (Br2 a b) = [a, b]
 nodeToList (Br3 a b c) = [a, b, c]
 \end{lstlisting}
 
-Similar as above, we can define $head$ and $tail$ function from
-$uncons$.
+Similar as above, we can define \texttt{head} and \texttt{tail} function from
+\texttt{uncons}.
 
 \begin{lstlisting}
 head = fst . uncons
@@ -1825,7 +1823,7 @@ root of the tree. Figure \ref{fig:ftr-illed-extract} illustrates this process.
 \begin{figure}[htbp]
   \centering
   \subfloat[Extract the first element n{[i]}{[1]} and put its children to the front finger of upper level tree.]{\includegraphics[scale=0.4]{img/ftr-illed-2.ps}}
-  \subfloat[Repeat this process $i$ times, and finally x{[1]} is extracted.]{\includegraphics[scale=0.4]{img/ftr-illed-i.ps}}
+  \subfloat[Repeat this process $i$ times, and finally x{[1]} is extracted.]{\hspace{0.1\textwidth}\includegraphics[scale=0.4]{img/ftr-illed-i.ps}}
   \caption{Traverse bottom-up till a leaf is extracted.} \label{fig:ftr-illed-extract}
 \end{figure}
 
@@ -1836,11 +1834,11 @@ algorithm assumes that the tree passed in isn't empty.
 \Function{Extract-Head}{$T$}
   \State $r \gets$ \textproc{Tree}()
   \State \Call{Connect-Mid}{$r, T$}
-  \While{\Call{Front}{$T$} $= \Phi \land $ \Call{Mid}{$T$} $\neq $ NIL}
+  \While{\Call{Front}{$T$} $= \phi \land $ \Call{Mid}{$T$} $\neq $ NIL}
     \State $T \gets$ \Call{Mid}{$T$}
   \EndWhile
 
-  \If{\Call{Front}{$T$} $ = \Phi \land $ \Call{Rear}{$T$} $\neq \Phi$}
+  \If{\Call{Front}{$T$} $ = \phi \land $ \Call{Rear}{$T$} $\neq \phi$}
     \State \textproc{Exchange} \Call{Front}{$T$} $\leftrightarrow$ \Call{Rear}{$T$}
   \EndIf
 
@@ -1888,8 +1886,8 @@ def extract_head(t):
     return (elem(n), flat(root))
 \end{lstlisting}
 
-Member function \verb|Tree.empty()| returns true if all the three parts - the front finger,
-the rear finger and the middle part inner tree - are empty. We put a flag \verb|Node.leaf|
+Member function \texttt{Tree.empty()} returns true if both the front finger and
+the rear finger are empty. We put a flag \texttt{Node.leaf}
 to mark if a node is a leaf or compound node. The exercise of this section asks the reader
 to consider some alternatives.
 
@@ -1905,10 +1903,10 @@ the tree is ill-formed.
 
 \begin{algorithmic}
 \Function{First-Lf}{$T$}
-  \While{\Call{Front}{$T$} $ = \Phi \land $ \Call{Mid}{$T$} $\neq$ NIL}
+  \While{\Call{Front}{$T$} $ = \phi \land $ \Call{Mid}{$T$} $\neq$ NIL}
     \State $T \gets$ \Call{Mid}{$T$}
   \EndWhile
-  \If{\Call{Front}{$T$} $ = \Phi \land$ \Call{Rear}{$T$} $\neq \Phi$}
+  \If{\Call{Front}{$T$} $ = \phi \land$ \Call{Rear}{$T$} $\neq \phi$}
     \State $n \gets$ \Call{Rear}{$T$}[1]
   \Else
     \State $n \gets$ \Call{Front}{$T$}[1]
@@ -1955,14 +1953,14 @@ To access the last element is quite similar, and we left it as an exercise to th
 \index{Finger tree!Append to tail}
 
 Because finger tree is symmetric, we can give the realization of appending element on tail
-by referencing to $insertT()$ algorithm.
+by referencing to $insertT$ algorithm.
 
 \be
 appendT(T, x) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  leaf(x) & T = \Phi \\
-  tree(\{y\}, \Phi, \{x\}) & T = leaf(y) \\
+  leaf(x) & T = \phi \\
+  tree(\{y\}, \phi, \{x\}) & T = leaf(y) \\
   tree(F, appendT(M, tr3(x_1, x_2, x_3)), \{x_4, x\}) & T = tree(F, M, \{x_1, x_2, x_3, x_4\}) \\
   tree(F, M, R \cup \{x\}) & otherwise
   \end{array}
@@ -1986,7 +1984,7 @@ snoc (Tr f m [a, b, c, d]) e = Tr f (snoc m (Br3 a b c)) [d, e]
 snoc (Tr f m r) a = Tr f m (r++[a])
 \end{lstlisting}
 
-Function name `\verb|snoc|' is mirror of '\verb|cons|', which indicates the symmetric relationship.
+Function name \texttt{snoc} is mirror of \texttt{cons}, which indicates the symmetric relationship.
 
 Appending new element to the end imperatively is quite similar. The following algorithm
 realizes appending.
@@ -2007,7 +2005,7 @@ realizes appending.
   \If{$T =$ NIL}
     \State $T \gets$ \textproc{Tree}()
     \State \Call{Front}{$T$} $\gets \{ n \}$
-  \ElsIf{ $|$ \Call{Rear}{$T$} $|$ = 1 $\land$ \Call{Front}{$T$} = $\Phi$}
+  \ElsIf{ $|$ \Call{Rear}{$T$} $|$ = 1 $\land$ \Call{Front}{$T$} = $\phi$}
     \State \Call{Front}{$T$} $\gets$ \Call{Rear}{$T$}
     \State \Call{Rear}{$T$} $\gets \{ n \}$
   \Else
@@ -2044,8 +2042,8 @@ def append_node(t, n):
 \subsection{remove element from the tail of the sequence}
 \index{Finger tree!Remove from tail}
 
-Similar to $appendT()$, we can realize the algorithm which remove the last element from
-finger tree in symmetric manner of $extractT()$.
+Similar to $appendT$, we can realize the algorithm which remove the last element from
+finger tree in symmetric manner of $extractT$.
 
 We denote the non-empty, non-leaf finger tree as $tree(F, M, R)$, where $F$ is the
 front finger, $M$ is the middle part inner tree, and $R$ is the rear finger.
@@ -2054,9 +2052,9 @@ front finger, $M$ is the middle part inner tree, and $R$ is the rear finger.
 removeT(T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (\Phi, x) & T = leaf(x) \\
-  (leaf(y), x) & T = tree(\{y\}, \Phi, \{x\}) \\
-  (tree(init(F), \Phi, last(F)), x) & T = tree(F, \Phi, \{x\}) \land F \neq \Phi \\
+  (\phi, x) & T = leaf(x) \\
+  (leaf(y), x) & T = tree(\{y\}, \phi, \{x\}) \\
+  (tree(init(F), \phi, last(F)), x) & T = tree(F, \phi, \{x\}) \land F \neq \phi \\
   (tree(F, M', toList(R')), x) & T = tree(F, M, \{x\}), (M', R') = removeT(M) \\
   (tree(F, M, init(R)), last(R)) & otherwise
   \end{array}
@@ -2070,7 +2068,7 @@ And Function $last(L)$ returns the last element, so that $last(L) = a_n$. Please
 refer to the appendix of this book for their implementation.
 
 Algorithm $removeT()$ can be translated to the following Haskell program, we name
-it as `\verb|unsnoc|' to indicate it's the reverse function of `\verb|snoc|'.
+it as \texttt{unsnoc} to indicate it's the reverse function of \texttt{snoc}.
 
 \lstset{language=Haskell}
 \begin{lstlisting}
@@ -2082,7 +2080,7 @@ unsnoc (Tr f m [a]) = (Tr f m' (nodeToList r), a) where (m', r) = unsnoc m
 unsnoc (Tr f m r) = (Tr f m (init r), last r)
 \end{lstlisting}
 
-And we can define a special function `\verb|last|' and '\verb|init|' for finger tree which is similar
+And we can define a special function \texttt{last} and \texttt{init} for finger tree which is similar
 to their counterpart for list.
 
 \begin{lstlisting}
@@ -2092,7 +2090,7 @@ init = fst . unsnoc
 
 Imperatively removing the element from the end is almost as same as removing on the head.
 Although there seems to be a special case, that as we always store the only element (or sub node) in the front
-finger while the rear finger and middle part inner tree are empty (e.g. $Tree(\{n\}, NIL, \Phi)$),
+finger while the rear finger and middle part inner tree are empty (e.g. $Tree(\{n\}, NIL, \phi)$),
 it might get nothing if always try to fetch the last element from rear finger.
 
 This can be solved by swapping the front and the rear finger if the rear is empty as in the
@@ -2102,11 +2100,11 @@ following algorithm.
 \Function{Extract-Tail}{$T$}
   \State $r \gets$ \textproc{Tree}()
   \State \Call{Connect-Mid}{$r, T$}
-  \While{\Call{Rear}{$T$} $= \Phi \land $ \Call{Mid}{$T$} $\neq $ NIL}
+  \While{\Call{Rear}{$T$} $= \phi \land $ \Call{Mid}{$T$} $\neq $ NIL}
     \State $T \gets$ \Call{Mid}{$T$}
   \EndWhile
 
-  \If{\Call{Rear}{$T$} $ = \Phi \land $ \Call{Front}{$T$} $\neq \Phi$}
+  \If{\Call{Rear}{$T$} $ = \phi \land $ \Call{Front}{$T$} $\neq \phi$}
     \State \textproc{Exchange} \Call{Front}{$T$} $\leftrightarrow$ \Call{Rear}{$T$}
   \EndIf
 
@@ -2150,7 +2148,7 @@ of $M_1$ and the rear finger of $M_2$, then merge the middle part inner tree of 
 as well as the rear finger of $M_1$ and front finger of $M_2$.
 
 If we denote function $front(T)$ returns the front finger, $rear(T)$ returns the rear finger,
-$mid(T)$ returns the middle part inner tree. the above $merge()$ algorithm can be
+$mid(T)$ returns the middle part inner tree. the above $merge$ algorithm can be
 expressed for non-trivial case as the following.
 
 \be
@@ -2164,14 +2162,14 @@ S = merge(mid(M_1), rear(M_1) \cup R_1 \cup F_2 \cup front(M_2), mid(M_2))
 If we look back to the original concatenate solution, it can be expressed as below.
 
 \be
-concat(T_1, T_2) = tree(F_1, merge(M_1, R_1 \cup R_2, M_2), R_2)
+concat(T_1, T_2) = tree(F_1, merge(M_1, R_1 \cup F_2, M_2), R_2)
 \ee
 
 And compare it with equation \ref{eq:merge-recursion}, it's easy to note the fact that
 concatenating is essentially merging. So we have the final algorithm like this.
 
 \be
-concat(T_1, T_2) = merge(T_1, \Phi, T_2)
+concat(T_1, T_2) = merge(T_1, \phi, T_2)
 \ee
 
 By adding edge cases, the $merge()$ algorithm can be completed as below.
@@ -2180,10 +2178,10 @@ By adding edge cases, the $merge()$ algorithm can be completed as below.
 merge(T_1, S, T_2) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  foldR(insertT, T_2, S) & T_1 = \Phi \\
-  foldL(appendT, T_1, S) & T_2 = \Phi \\
-  merge(\Phi, \{x\} \cup S, T_2) & T_1 = leaf(x) \\
-  merge(T_1, S \cup \{x\}, \Phi) & T_2 = leaf(x) \\
+  foldR(insertT, T_2, S) & T_1 = \phi \\
+  foldL(appendT, T_1, S) & T_2 = \phi \\
+  merge(\phi, \{x\} \cup S, T_2) & T_1 = leaf(x) \\
+  merge(T_1, S \cup \{x\}, \phi) & T_2 = leaf(x) \\
   tree(F_1, merge(M_1, nodes(R_1 \cup S \cup F_2), M2), R_2) & otherwise
   \end{array}
 \right .
@@ -2201,7 +2199,7 @@ $L' = \{ a_2, a_3, ..., a_{n-1}, a_n\}$ is the rest of elements except for the f
 foldL(f, e, L) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  e & L = \Phi \\
+  e & L = \phi \\
   foldL(f, f(e, a_1), L') & otherwise
   \end{array}
 \right .
@@ -2211,7 +2209,7 @@ foldL(f, e, L) = \left \{
 foldR(f, e, L) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  e & L = \Phi \\
+  e & L = \phi \\
   f(a_1, foldR(f, e, L')) & otherwise
   \end{array}
 \right .
@@ -2222,16 +2220,16 @@ They are detailed explained in the appendix of this book.
 If either one of the tree is a leaf, we can insert or append the element of this leaf to
 $S$, so that it becomes the trivial case of concatenating one empty tree with another.
 
-Function $nodes()$ is used to wrap a list of elements to a list of 2-3 trees.
+Function $nodes$ is used to wrap a list of elements to a list of 2-3 trees.
 This is because the contents of middle part inner tree, compare to the
-contents of finger, are one level deeper in terms of $Node()$. Consider the
+contents of finger, are one level deeper in terms of $Node$. Consider the
 time point that transforms from recursive case to edge case. Let's suppose
 $M_1$ is empty at that time, we then need repeatedly insert all elements from
 $R_1 \cup S \cup F_2$ to $M_2$. However, we can't directly do the insertion.
 If the element type is $a$, we can only insert $Node(a)$ which is 2-3 tree
-to $M_2$. This is just like what we did in the $insertT()$ algorithm,
+to $M_2$. This is just like what we did in the $insertT$ algorithm,
 take out the last 3 elements, wrap them in a 2-3 tree, and recursive
-perform $insertT()$. Here is the definition of $nodes()$.
+perform $insertT$. Here is the definition of $nodes$.
 
 \be
 nodes(L) = \left \{
@@ -2245,22 +2243,22 @@ nodes(L) = \left \{
 \right .
 \ee
 
-Function $nodes()$ follows the constraint of 2-3 tree, that if there are
+Function $nodes$ follows the constraint of 2-3 tree, that if there are
 only 2 or 3 elements in the list, it just wrap them in singleton list
 contains a 2-3 tree; If there are 4 elements in the lists, it split them
 into two trees each is consist of 2 branches; Otherwise, if there are
 more elements than 4, it wraps the first three in to one tree with 3 branches,
-and recursively call $nodes()$ to process the rest.
+and recursively call $nodes$ to process the rest.
 
 The performance of concatenation is determined by merging. Analyze the
 recursive case of merging reveals that the depth of recursion is
 proportion to the smaller height of the two trees. As the tree is
 ensured to be balanced by using 2-3 tree. it's height is bound to
-$O(\lg N')$ where $N'$ is the number of elements. The edge
-case of merging performs as same as insertion, (It calls $insertT()$
-at most 8 times) which is amortized $O(1)$ time, and $O(\lg M)$
-at worst case, where $M$ is the difference in height of the two trees.
-So the overall performance is bound to $O(\lg N)$, where $N$ is
+$O(\lg n')$ where $n'$ is the number of elements. The edge
+case of merging performs as same as insertion, (It calls $insertT$
+at most 8 times) which is amortized $O(1)$ time, and $O(\lg m)$
+at worst case, where $m$ is the difference in height of the two trees.
+So the overall performance is bound to $O(\lg n)$, where $n$ is
 the total number of elements contains in two finger trees.
 
 The following Haskell program implements the concatenation algorithm.
@@ -2271,7 +2269,7 @@ concat :: Tree a -> Tree a -> Tree a
 concat t1 t2 = merge t1 [] t2
 \end{lstlisting}
 
-Note that there is `\verb|concat|' function defined in prelude standard library,
+Note that there is \texttt{concat} function defined in prelude standard library,
 so we need distinct them either by hiding import or take a different name.
 
 \begin{lstlisting}
@@ -2283,7 +2281,7 @@ merge t1 ts (Lf a) = merge t1 (ts++[a]) Empty
 merge (Tr f1 m1 r1) ts (Tr f2 m2 r2) = Tr f1 (merge m1 (nodes (r1 ++ ts ++ f2)) m2) r2
 \end{lstlisting}
 
-And the implementation of $nodes()$ is as below.
+And the implementation of $nodes$ is as below.
 
 \begin{lstlisting}
 nodes :: [a] -> [Node a]
@@ -2309,7 +2307,7 @@ Below algorithm describes this process in detail.
 
 \begin{algorithmic}
 \Function{Concat}{$T_1, T_2$}
-  \State \Return \Call{Merge}{$T_1, \Phi, T_2$}
+  \State \Return \Call{Merge}{$T_1, \phi, T_2$}
 \EndFunction
 \Statex
 \Function{Merge}{$T_1, N, T_2$}
@@ -2322,7 +2320,7 @@ Below algorithm describes this process in detail.
     \State \Call{Rear}{$T$} $\gets$ \Call{Rear}{$T_2$}
     \State \Call{Connect-Mid}{$p, T$}
     \State $p \gets T$
-    \State $N \gets$ \textproc{Nodes}(\Call{Rear}{$T_1$} $\cup N \cup$ \Call{Front}{$T_2$})
+    \State $N \gets$ \textproc{Nodes}(\Call{Rear}{$T_1$} $\cup n \cup$ \Call{Front}{$T_2$})
     \State $T_1 \gets$ \Call{Mid}{$T_1$}
     \State $T_2 \gets$ \Call{Mid}{$T_2$}
   \EndWhile
@@ -2368,8 +2366,8 @@ def merge(t1, ns, t2):
     return flat(root)
 \end{lstlisting}
 
-Because Python only provides folding function from left as \verb|reduce()|, a folding function
-from right is given like what we shown in pseudo code, that it repeatedly applies function
+Because Python only provides folding function from left as \texttt{reduce()}, a folding function
+from right is given like what we shown in the following code, that it repeatedly applies function
 in reverse order of the list.
 
 \begin{lstlisting}
@@ -2383,14 +2381,14 @@ The only function in question is how to balanced-group nodes to bigger 2-3 trees
 can hold at most 3 sub trees, we can firstly take 3 nodes and wrap them to a ternary tree if there
 are more than 4 nodes in the list and continuously deal with the rest.
 If there are just 4 nodes, they can be wrapped to two
-binary trees. For other cases (there are 3 trees, 2 trees, 1 tree), we simply wrap them
+binary trees. For other cases (there are 3 nodes, 2 nodes, 1 node), we simply wrap them
 all to a tree.
 
 Denote node list $L=\{ n_1, n_2, ... \}$, The following algorithm realizes this process.
 
 \begin{algorithmic}
 \Function{Nodes}{$L$}
-  \State $N = \Phi$
+  \State $N = \phi$
   \While{$|L| > 4$}
     \State $n \gets$ \textproc{Node}()
     \State \Call{Children}{$n$} $\gets L[1..3]$  \Comment{ $\{n_1, n_2, n_3 \}$ }
@@ -2404,7 +2402,7 @@ Denote node list $L=\{ n_1, n_2, ... \}$, The following algorithm realizes this 
     \State $y \gets$ \textproc{Node}()
     \State \Call{Children}{$y$} $\gets \{L[3], L[4]\}$
     \State $N \gets N \cup \{ x, y \}$
-  \ElsIf{$L \neq \Phi$}
+  \ElsIf{$L \neq \phi$}
     \State $n \gets$ \textproc{Node}()
     \State \Call{Children}{$n$} $\gets L$
     \State $N \gets N \cup \{ n \}$
@@ -2414,7 +2412,7 @@ Denote node list $L=\{ n_1, n_2, ... \}$, The following algorithm realizes this 
 \EndFunction
 \end{algorithmic}
 
-It's straight forward to translate the algorithm to below Python program. Where function \verb|wraps()|
+It's straight forward to translate the algorithm to below Python program. Where function \texttt{wraps()}
 helps to create an empty node, then set a list as the children of this node.
 
 \begin{lstlisting}
@@ -2493,7 +2491,7 @@ something like this.
 size(T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  0 & T = \Phi \\
+  0 & T = \phi \\
   ? & T = leaf(x) \\
   s & T = tree(s, F, M, R)
   \end{array}
@@ -2512,7 +2510,7 @@ The correct way is to call some size function on the tree node as the following.
 size(T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  0 & T = \Phi \\
+  0 & T = \phi \\
   size'(x) & T = leaf(x) \\
   s & T = tree(s, F, M, R)
   \end{array}
@@ -2576,7 +2574,7 @@ nodes stored in the list. Denote $L = \{ a_1, a_2, ... \}$ and $L' = \{ a_2, a_3
 size''(L) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  0 & L = \Phi \\
+  0 & L = \phi \\
   size'(a_1) + size''(L') & otherwise
   \end{array}
 \right .
@@ -2636,7 +2634,7 @@ for this field as the below algorithm.
 \end{algorithmic}
 
 The following Python code, for example, translates this algorithm by using
-standard \verb|sum()| and \verb|map()| functions provided in library.
+standard \texttt{sum()} and \texttt{map()} functions provided in library.
 
 \lstset{language=Python}
 \begin{lstlisting}
@@ -2663,7 +2661,7 @@ The algorithm is trivial and we skip its implementation example program.
 \subsubsection{Modification due to the augmented size}
 
 The algorithms have been presented so far need to be modified to accomplish with the
-augmented size. For example the $insertT()$ function now inserts a tree node instead
+augmented size. For example the $insertT$ function now inserts a tree node instead
 of a plain element.
 
 \be
@@ -2686,10 +2684,10 @@ also be modified to add size information of these three arguments.
 tree'(F, M, R) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  fromL(F) & M = \Phi \land R = \Phi \\
-  fromL(R) & M = \Phi \land F = \Phi \\
-  tree'(unwraps(F'), M', R) & F = \Phi, (F', M') = extractT'(M) \\
-  tree'(F, M', unwraps(R')) & R = \Phi, (M', R') = removeT'(M) \\
+  fromL(F) & M = \phi \land R = \phi \\
+  fromL(R) & M = \phi \land F = \phi \\
+  tree'(unwraps(F'), M', R) & F = \phi, (F', M') = extractT'(M) \\
+  tree'(F, M', unwraps(R')) & R = \phi, (M', R') = removeT'(M) \\
   tree(size''(F) + size(M) + size''(R), F, M, R) & otherwise
   \end{array}
 \right .
@@ -2699,7 +2697,7 @@ Where $fromL()$ helps to turn a list of nodes to a finger tree by repeatedly
 inserting all the element one by one to an empty tree.
 
 \[
-fromL(L) = foldR(insertT', \Phi, L)
+fromL(L) = foldR(insertT', \phi, L)
 \]
 
 Of course it can be implemented in pure recursive manner without using folding as well.
@@ -2733,8 +2731,8 @@ realized by using it like the following.
 insertT'(x, T) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  leaf(x) & T = \Phi \\
-  tree'(\{x\}, \Phi, \{y\}) & T = leaf(x) \\
+  leaf(x) & T = \phi \\
+  tree'(\{x\}, \phi, \{y\}) & T = leaf(x) \\
   tree'(\{x, x_1\}, insertT'(wraps(\{x_2, x_3, x_4\}), M), R) & T = tree(s, \{x_1, x_2, x_3, x_4\}, M, R) \\
   tree'(\{x\} \cup F, M, R) & otherwise
   \end{array}
@@ -2771,7 +2769,7 @@ tree, we should update size when traverse the tree.
   \If{$T =$ NIL}
     \State $T \gets$ \textproc{Tree}()
     \State \Call{Front}{$T$}$\gets \{ n \}$
-  \ElsIf{ $|$ \Call{Front}{$T$} $|$ = 1 $\land$ \Call{Rear}{$T$} = $\Phi$}
+  \ElsIf{ $|$ \Call{Front}{$T$} $|$ = 1 $\land$ \Call{Rear}{$T$} = $\phi$}
     \State \Call{Rear}{$T$} $\gets$ \Call{Front}{$T$}
     \State \Call{Front}{$T$} $\gets \{ n \}$
   \Else
@@ -2808,12 +2806,12 @@ def prepend_node(n, t):
 \end{lstlisting}
 
 Note that the tree constructor is also modified to take a size argument
-as the first parameter. And the \verb|leaf()| helper function does not
+as the first parameter. And the \texttt{leaf} helper function does not
 only construct the tree from a node, but also set the size of the tree
 with the same size of the node inside it.
 
 For simplification purpose, we skip the detailed description of what are modified in
-$extractT()'$, $appendT()$, $removeT()$, and $concat()$ algorithms. They are left as exercises to the
+$extractT$, $appendT$, $removeT$, and $concat$ algorithms. They are left as exercises to the
 reader.
 
 \subsubsection{Split a finger tree at a given position}
@@ -2837,7 +2835,7 @@ as below.
 splitAt(i, T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (\Phi, x, \Phi) & T = leaf(x) \\
+  (\phi, x, \phi) & T = leaf(x) \\
   ... & otherwise
   \end{array}
 \right .
@@ -2856,7 +2854,7 @@ a sub list contains all rest nodes after $i$.
 splitAt(i, T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (\Phi, x, \Phi) & T = leaf(x) \\
+  (\phi, x, \phi) & T = leaf(x) \\
   (fromL(A), x, tree'(B, M, R) & i \leq S_f, (A, x, B) = splitAtL(i, F) \\
   (tree'(F, M_l, A), x, tree'(B, M_r, R) & S_f < i \leq S_f + S_m \\
   (tree'(F, M, A), x, fromL(B)) & otherwise, (A, x, B) = splitAtL(i-S_f-S_m, R)
@@ -2873,7 +2871,7 @@ Where $M_l, x, M_r, A, B$ in the thrid case are calculated as the following.
 \end{array}
 \]
 
-And the function $splitAtL()$ is just a linear traverse, since the length of list
+And the function $splitAtL$ is just a linear traverse, since the length of list
 is limited not to exceed the constraint of 2-3 tree, the performance is still
 ensured to be constant $O(1)$ time. Denote $L = \{x_1, x_2, ... \}$ and
 $L' = \{ x_2, x_3, ...\}$.
@@ -2882,23 +2880,29 @@ $L' = \{ x_2, x_3, ...\}$.
 splitAtL(i, L) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (\Phi, x_1, \Phi) & i = 0 \land L = \{x_1\} \\
-  (\Phi, x_1, L') & i < size'(x_1) \\
-  (\{x_1\} \cup A, x, B) & otherwise, (A, x, B) = splitAtL(i-size'(x_1), L')
+  (\phi, x_1, \phi) & i = 0 \land L = \{x_1\} \\
+  (\phi, x_1, L') & i < size'(x_1) \\
+  (\{x_1\} \cup A, x, B) & otherwise
   \end{array}
 \right .
 \ee
+
+Where
+
+\[
+(A, x, B) = splitAtL(i-size'(x_1), L')
+\]
 
 The solution of splitting is a typical divide and conquer strategy. The performance
 of this algorithm is determined by the recursive case of searching in middle part
 inner tree. Other cases are all constant time as we've analyzed. The depth of
 recursion is proportion to the height of the tree $h$, so the algorithm is bound
 to $O(h)$. Because the tree is well balanced (by using 2-3 tree, and all the
-insertion/removal algorithms keep the tree balanced), so $h = O(\lg N)$ where
-$N$ is the number of elements stored in finger tree. The overall performance
-of splitting is $O(\lg N)$.
+insertion/removal algorithms keep the tree balanced), so $h = O(\lg n)$ where
+$n$ is the number of elements stored in finger tree. The overall performance
+of splitting is $O(\lg n)$.
 
-Let's first give the Haskell program for $splitAtL()$ function
+Let's first give the Haskell program for $splitAtL$ function
 
 \lstset{language=Haskell}
 \begin{lstlisting}
@@ -2908,7 +2912,7 @@ splitNodesAt i (x:xs) | i < size x = ([], x, xs)
                                     in (x:xs', y, ys)
 \end{lstlisting}
 
-Then the program for $splitAt()$, as there is already function defined in standard
+Then the program for $splitAt$, as there is already function defined in standard
 library with this name, we slightly change the name by adding a apostrophe.
 
 \begin{lstlisting}
@@ -2930,7 +2934,7 @@ splitAt' i (Tr _ f m r)
 \index{Finger tree!Random access}
 
 With the help of splitting at any arbitrary position, it's trivial to realize random
-access in $O(\lg N)$ time. Denote function $mid(x)$ returns the 2-nd element of a tuple,
+access in $O(\lg n)$ time. Denote function $mid(x)$ returns the 2-nd element of a tuple,
 $left(x)$, and $right(x)$ return the first element and the 3-rd element of the tuple
 respectively.
 
@@ -3084,7 +3088,7 @@ def lookupNs(ns, i, f):
 \end{lstlisting}
 
 With auxiliary algorithm that can apply function at a given position, it's trivial to implement
-the \textproc{Get-At}() and \textproc{Set-At}() by passing special function for applying.
+the \textproc{Get-At} and \textproc{Set-At} by passing special functions for applying.
 
 \begin{algorithmic}
 \Function{Get-At}{$T, i$}
@@ -3096,7 +3100,7 @@ the \textproc{Get-At}() and \textproc{Set-At}() by passing special function for 
 \EndFunction
 \end{algorithmic}
 
-That is we pass \verb|id| function to implement getting element at a position, which doesn't
+That is we pass $id$ function to implement getting element at a position, which doesn't
 change anything at all; and pass constant function to implement setting, which set the element
 to new value by ignoring its previous value.
 
@@ -3278,15 +3282,15 @@ the element at that position.
 
 \begin{Exercise}
 \begin{enumerate}
-\item Another way to realize $insertT'()$ is to force increasing the size field by one, so
-that we needn't write function $tree'()$. Try to realize the algorithm by using this idea.
+\item Another way to realize $insertT'$ is to force increasing the size field by one, so
+that we needn't write function $tree'$. Try to realize the algorithm by using this idea.
 
-\item Try to handle the augment size information as well as in $insertT'()$ algorithm for
-the following algorithms (both functional and imperative): $extractT()'$, $appendT()$, $removeT()$, and $concat()$. The $head$, $tail$,
+\item Try to handle the augment size information as well as in $insertT'$ algorithm for
+the following algorithms (both functional and imperative): $extractT'$, $appendT'$, $removeT'$, and $concat'$. The $head$, $tail$,
 $init$ and $last$ functions should be kept unchanged. Don't refer to the download-able
 programs along with this book before you take a try.
 
-\item In the imperative \textproc{Apply-At}() algorithm, it tests if the size of the
+\item In the imperative \textproc{Apply-At} algorithm, it tests if the size of the
 current tree is greater than one. Why don't we test if the current tree is
 a leaf? Tell the difference between these two approaches.
 

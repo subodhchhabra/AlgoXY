@@ -52,7 +52,7 @@ methods, e.g. quick sort and merge sort. We'll use
 the same approaches in the chapter of insertion sort, to
 analyze why it's slow, and try to improve it by varies of
 attempts till reach the best bound of comparison
-based sorting, $O(N \lg N)$, by evolving to heap sort.
+based sorting, $O(n \lg n)$, by evolving to heap sort.
 
 The idea of selection sort can be illustrated by a real life
 story. Consider a kid eating a bunch of grapes. There are two
@@ -93,7 +93,7 @@ This description can be formalized to a equation.
 sort(A) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & A = \Phi \\
+  \phi & A = \phi \\
   \{ m \} \cup sort(A') & otherwise
   \end{array}
 \right.
@@ -117,8 +117,8 @@ The algorithm can also be given in imperative manner.
 
 \begin{algorithmic}
 \Function{Sort}{$A$}
-  \State $X \gets \Phi$
-  \While{$A \neq \Phi$}
+  \State $X \gets \phi$
+  \While{$A \neq \phi$}
     \State $x \gets$ \Call{Min}{$A$}
     \State $A \gets$ \Call{Del}{$A, x$}
     \State $X \gets$ \Call{Append}{$X, x$}
@@ -158,9 +158,9 @@ minimum element, we swap it with the element in the $i$-th cell:
 \EndFunction
 \end{algorithmic}
 
-Denote $A = \{a_1, a_2, ..., a_N\}$. At any time, when we process the $i$-th element,
+Denote $A = \{a_1, a_2, ..., a_n\}$. At any time, when we process the $i$-th element,
 all elements before $i$, as $\{a_1, a_2, ..., a_{i-1}\}$ have already been sorted.
-We locate the minimum element among the $\{a_i, a_{i+1}, ..., a_N\}$, and exchange it
+We locate the minimum element among the $\{a_i, a_{i+1}, ..., a_n\}$, and exchange it
 with $a_i$, so that the $i$-th cell contains the right value. The process is repeatedly
 executed until we arrived at the last element.
 
@@ -196,11 +196,11 @@ compared. There are two ways to to solve this problem, which are suitable for
 different data-structures respectively.
 
 \subsection{Labeling}
-Method 1 is to label each grape with a number: $\{1, 2, ..., N\}$, and we systematically
+Method 1 is to label each grape with a number: $\{1, 2, ..., n\}$, and we systematically
 perform the comparison in the order of this sequence of labels. That we first
 compare grape number 1 and grape number 2, pick the bigger one; then we take grape
 number 3, and do the comparison, ... We repeat this process until arrive at
-grape number $N$. This is quite suitable for elements stored in an array.
+grape number $n$. This is quite suitable for elements stored in an array.
 
 \begin{algorithmic}
 \Function{Min}{$A$}
@@ -235,8 +235,7 @@ T& min(T* from, T* to) {
 
 template<typename T>
 void ssort(T* xs, int n) {
-    int i;
-    for (i = 0; i < n; ++i)
+    for (int i = 0; i < n; ++i)
         std::swap(xs[i], min(xs+i, xs+n));
 }
 \end{lstlisting}
@@ -285,7 +284,7 @@ def min_at(xs, i, n):
 \index{selection sort!tail-recursive call minimum finding}
 Another method is to group all grapes in two parts: the group we have examined, and the rest we
 haven't. We denote these two groups as $A$ and $B$; All the elements (grapes) as $L$.
-At the beginning, we haven't examine any grapes at all, thus $A$ is empty ($\Phi$), and
+At the beginning, we haven't examine any grapes at all, thus $A$ is empty ($\phi$), and
 $B$ contains all grapes. We can select arbitrary two grapes from $B$, compare them, and
 put the loser (the smaller one for example) to $A$. After that, we repeat this process
 by continuously picking arbitrary grapes from $B$, and compare with the winner of the
@@ -306,7 +305,7 @@ this method can be formalized as the below auxiliary function.
 min'(A, m, B) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (m, A) & B = \Phi \\
+  (m, A) & B = \phi \\
   min'(A \cup \{m\}, b_1, B') & b_1 < m \\
   min'(A \cup \{b_1\}, m, B') & otherwise
   \end{array}
@@ -318,11 +317,11 @@ an empty $A$, and use an arbitrary element (for instance, the first one)
 to initialize $m$:
 
 \be
-extractMin(L) = min'(\Phi, l_1, L')
+extractMin(L) = min'(\phi, l_1, L')
 \ee
 
 Where $L'$ is all elements in $L$ except for the first one $l_1$. The algorithm
-$extractMin)$ doesn't not only find the minimum element, but also returns the
+$extractMin$ doesn't not only find the minimum element, but also returns the
 updated collection which doesn't contain this minimum. Summarize this minimum
 extracting algorithm up to the basic selection sort definition, we can create
 a complete functional sorting program, for example as this Haskell code snippet.
@@ -340,9 +339,9 @@ extractMin (x:xs) = min' [] x xs where
 
 The first line handles the trivial edge case that the sorting result for empty
 list is obvious empty; The second clause ensures that, there is at least one
-element, that's why the \verb|extractMin| function needn't other pattern-matching.
+element, that's why the \texttt{extractMin} function needn't other pattern-matching.
 
-One may think the second clause of \verb|min'| function should be written like below:
+One may think the second clause of \texttt{min'} function should be written like below:
 
 \begin{lstlisting}
 min' ys m (x:xs) = if m < x then min' ys ++ [x] m xs
@@ -355,7 +354,7 @@ which is proportion to the length of part $A$, while `cons' is constant $O(1)$ t
 operation. In fact, we needn't keep the relative order of the list to be sorted,
 as it will be re-arranged anyway during sorting.
 
-It's quite possible to keep the relative order during sorting, while ensure the
+It's quite possible to keep the relative order during sorting\footnote{known as stable sort.}, while ensure the
 performance of finding the minimum element not degrade to quadratic. The following
 equation defines a solution.
 
@@ -363,7 +362,7 @@ equation defines a solution.
 extractMin(L) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (l_1, \Phi) & |L| = 1 \\
+  (l_1, \phi) & |L| = 1 \\
   (l_1, L') & l_1 < m, (m, L'') = extractMin(L') \\
   (m, {l_1} \cup L'') & otherwise
   \end{array}
@@ -399,14 +398,14 @@ to the appendix about tail recursion call for detailed discussion.
 \subsection{performance of the basic selection sorting}
 
 Both the labeling method, and the grouping method need examine all the elements to
-pick the minimum in every round; and we totally pick up the minimum element $N$ times.
-Thus the performance is around $N + (N-1) + (N-2) + ... + 1$ which is $\frac{N(N+1)}{2}$.
-Selection sort is a quadratic algorithm bound to $O(N^2)$ time.
+pick the minimum in every round; and we totally pick up the minimum element $n$ times.
+Thus the performance is around $n + (n-1) + (n-2) + ... + 1$ times comparison, which is $\frac{n(n+1)}{2}$.
+Selection sort is a quadratic algorithm bound to $O(n^2)$ time.
 
 Compare to the insertion sort, which we introduced previously, selection sort
 performs same in its best case, worst case and average case. While insertion
 sort performs well in best case (that the list has been reverse ordered, and it is stored
-in linked-list) as $O(N)$, and the worst performance is $O(N^2)$.
+in linked-list) as $O(n)$, and the worst performance is $O(n^2)$.
 
 In the next sections, we'll examine, why selection sort performs poor, and try
 to improve it step by step.
@@ -446,7 +445,7 @@ to the basic selection sort algorithms. For example:
 sort(c, L) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & L = \Phi \\
+  \phi & L = \phi \\
   {m} \cup sort(c, L'') & otherwise, (m, L'') = extract(c, L')
   \end{array}
 \right.
@@ -458,7 +457,7 @@ And the algorithm $extract(c, L)$ is defined as below.
 extract(c, L) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  (l_1, \Phi) & |L| = 1 \\
+  (l_1, \phi) & |L| = 1 \\
   (l_1, L') & c(l_1, m), (m, L'') = extract(c, L') \\
   (m, \{l_1\} \cup L'') & \lnot c(l_1, m)
   \end{array}
@@ -504,8 +503,8 @@ the needs to pass the `less than' comparator for every function calls.
   (ssort lst))
 \end{lstlisting}
 
-Note that, both \verb|ssort| and \verb|extract-min| are inner functions, so that the
-`less than' comparator \verb|ltp?| is available to them. Passing `$<$' to this function
+Note that, both \texttt{ssort} and \texttt{extract-min} are inner functions, so that the
+`less than' comparator \texttt{ltp?} is available to them. Passing `$<$' to this function
 yields the normal sorting in ascending order:
 
 \lstset{language=Lisp}
@@ -541,10 +540,10 @@ inline the minimum finding part as an inner loop.
 \EndProcedure
 \end{algorithmic}
 
-Observe that, when we are sorting $N$ elements, after the first $N-1$ minimum ones are selected,
-the left only one, is definitely the $N$-th big element, so that we need NOT find the
+Observe that, when we are sorting $n$ elements, after the first $n-1$ minimum ones are selected,
+the left only one, is definitely the $n$-th big element, so that we need NOT find the
 minimum if there is only one element in the list. This indicates that the outer loop can
-iterate to $N-1$ instead of $N$.
+iterate to $n-1$ instead of $n$.
 
 Another place we can fine tune, is that we needn't swap the elements if the $i$-th minimum one
 is just $A[i]$. The algorithm can be modified accordingly as below:
@@ -602,7 +601,7 @@ This version reveals the fact that, selecting the maximum element can sort the e
 ascending order as well. What's more, we can find both the minimum and the maximum elements
 in one pass of traversing, putting the minimum at the first location, while putting the
 maximum at the last position. This approach can speed up the sorting slightly (halve the
-times of the outer loop).
+times of the outer loop). This method is called 'cock-tail sort'.
 
 \begin{algorithmic}
 \Procedure{Sort}{$A$}
@@ -693,7 +692,7 @@ Where the minimum and the maximum are extracted from $L$ by a function $select(L
 
 Note that, the minimum is actually linked to the front of the recursive sort result. Its semantic is a constant $O(1)$
 time `cons' (refer to the appendix of this book for detail). While the maximum is appending to the tail. This
-is typically a linear $O(N)$ time expensive operation. We'll optimize it later.
+is typically a linear $O(n)$ time expensive operation. We'll optimize it later.
 
 Function $select(L)$ scans the whole list to find both the minimum and the maximum. It can be defined as below:
 
@@ -716,7 +715,7 @@ $l_1$ out, then recursively perform selection on the rest of the list. After tha
 then the minimum or greater than the maximum candidates, so that we can finalize the result.
 
 Note that for all the cases, there is no appending operation to form the result. However, since selection must
-scan all the element to determine the minimum and the maximum, it is bound to $O(N)$ linear time.
+scan all the element to determine the minimum and the maximum, it is bound to $O(n)$ linear time.
 
 The complete example Haskell program is given as the following.
 
@@ -743,14 +742,14 @@ We use $A$ and $B$ as accumulators. The new cock-tail sort is defined as the fol
 sort'(A, L, B) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  A \cup L \cup B & L = \Phi \lor |L| = 1 \\
+  A \cup L \cup B & L = \phi \lor |L| = 1 \\
   sort'(A \cup \{ l_{min}\}, L'', \{ l_{max}\} \cup B) & otherwise
   \end{array}
 \right.
 \ee
 
 Where $l_{min}$, $l_{max}$ and $L''$ are defined as same as before. And we start sorting by passing
-empty $A$ and $B$: $sort(L) = sort'(\Phi, L, \Phi)$.
+empty $A$ and $B$: $sort(L) = sort'(\phi, L, \phi)$.
 
 Besides the edge case, observing that the appending operation only happens on $A \cup \{l_{min} \}$; while
 $l_{max}$ is only linked to the head of $B$. This appending occurs in every recursive call. To eliminate
@@ -772,7 +771,7 @@ Based on this idea, the algorithm can be improved one more step as the following
 sort'(A, L, B) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  reverse(A) \cup B & L = \Phi \\
+  reverse(A) \cup B & L = \phi \\
   reverse(\{l_1\} \cup A) \cup B & |L| = 1 \\
   sort'(\{l_{min}\} \cup A, L'', \{l_{max}\} \cup B)
   \end{array}
@@ -803,6 +802,7 @@ there are several special edge cases should be handled correctly:
       \item $A = \{max, ..., min\}$.
     \end{itemize}
     Please don't refer to the example source code along with this chapter before you try to solve this problem.
+    \item Realize the function $select(L)$ by folding.
   \end{itemize}
 \end{Exercise}
 
@@ -855,7 +855,7 @@ case.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.25]{img/tournament-tree-1.ps}
+  \includegraphics[scale=0.6]{img/tournament-tree-1.ps}
   \caption{The element 15 is knocked out in the first round.}
   \label{fig:tournament-tree-1}
 \end{figure}
@@ -899,21 +899,21 @@ show the steps of applying this strategy.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.25]{img/tournament-tree-2.ps}
+  \includegraphics[scale=0.6]{img/tournament-tree-2.ps}
   \caption{Extract 16, replace it with $-\infty$, 15 sifts up to root.}
   \label{fig:tournament-tree-2}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.25]{img/tournament-tree-3.ps}
+  \includegraphics[scale=0.6]{img/tournament-tree-3.ps}
   \caption{Extract 15, replace it with $-\infty$, 14 sifts up to root.}
   \label{fig:tournament-tree-3}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[scale=0.25]{img/tournament-tree-4.ps}
+  \includegraphics[scale=0.6]{img/tournament-tree-4.ps}
   \caption{Extract 14, replace it with $-\infty$, 13 sifts up to root.}
   \label{fig:tournament-tree-4}
 \end{figure}
@@ -940,14 +940,14 @@ And this tree is the finally built tournament tree.
 
 \begin{algorithmic}
 \Function{Build-Tree}{$A$}
-  \State $T \gets \Phi$
+  \State $T \gets \phi$
   \For{each $x \in A$}
     \State $t \gets $ \Call{Create-Node}{}
     \State \Call{Key}{$t$} $\gets x$
     \State \Call{Append}{$T, t$}
   \EndFor
   \While{$|T| > 1$}
-    \State $T' \gets \Phi$
+    \State $T' \gets \phi$
     \For{every $t_1, t_2 \in$ T}
       \State $t \gets $ \Call{Create-Node}{}
       \State \Call{Key}{$t$} $\gets$ \textproc{Max}(\Call{Key}{$t_1$}, \Call{Key}{$t_2$})
@@ -963,9 +963,9 @@ And this tree is the finally built tournament tree.
 \EndFunction
 \end{algorithmic}
 
-Suppose the length of the list $A$ is $N$, this algorithm firstly traverses the list to build tree,
-which is linear to $N$ time. Then it repeatedly compares pairs, which loops proportion to
-$N + \frac{N}{2} + \frac{N}{4} + ... + 2 = 2N$. So the total performance is bound to $O(N)$ time.
+Suppose the length of the list $A$ is $n$, this algorithm firstly traverses the list to build tree,
+which is linear to $n$ time. Then it repeatedly compares pairs, which loops proportion to
+$n + \frac{n}{2} + \frac{n}{4} + ... + 2 = 2n$. So the total performance is bound to $O(n)$ time.
 
 The following ANSI C program implements this tournament tree building algorithm.
 
@@ -992,9 +992,9 @@ The type of key can be defined somewhere, for example:
 typedef int Key;
 \end{lstlisting}
 
-Function \verb|leaf(x)| creats a leaf node, with value \verb|x| as key,
-and sets all its fields, left, right and parent to \verb|NIL|.
-While function \verb|branch(key, left, right)| creates a branch node, and links the new
+Function \texttt{leaf(x)} creats a leaf node, with value \texttt{x} as key,
+and sets all its fields, left, right and parent to \texttt{NIL}.
+While function \texttt{branch(key, left, right)} creates a branch node, and links the new
 created node as parent of its two children if they are not empty. For the sake of
 brevity, we skip the detail of them. They are left as exercise to the reader, and
 the complete program can be downloaded along with this book.
@@ -1026,7 +1026,7 @@ to root through the parent field, and determine the new maximum element.
     \EndIf
     \State \Call{Key}{$T$} $\gets -\infty$
   \EndWhile
-  \While{\Call{Parent}{$T$} $\neq \Phi$} \Comment{The bottom up pass}
+  \While{\Call{Parent}{$T$} $\neq \phi$} \Comment{The bottom up pass}
     \State $T \gets$ \Call{Parent}{$T$}
     \State \Call{Key}{$T$} $\gets$ \textproc{Max}(\textproc{Key}(\Call{Left}{$T$}), \textproc{Key}(\Call{Right}{$T$}))
   \EndWhile
@@ -1064,14 +1064,14 @@ Key pop(struct Node* t) {
 \end{lstlisting}
 
 The behavior of \textproc{Extract-Max} is quite similar to the pop operation for some data structures,
-such as queue, and heap, thus we name it as \verb|pop| in this code snippet.
+such as queue, and heap, thus we name it as \texttt{pop} in this code snippet.
 
-Algorithm \textproc{Extract-Max} process the tree in tow passes, one is top-down, then a bottom-up along
+Algorithm \textproc{Extract-Max} process the tree in two passes, one is top-down, then a bottom-up along
 the path that the `champion team wins the world cup'.
 Because the tournament tree is well balanced,
-the length of this path, which is the height of the tree, is bound to $O(\lg N)$,
-where $N$ is the number of the elements to be sorted (which are equal to the number of leaves).
-Thus the performance of this algorithm is $O(\lg N)$.
+the length of this path, which is the height of the tree, is bound to $O(\lg n)$,
+where $n$ is the number of the elements to be sorted (which are equal to the number of leaves).
+Thus the performance of this algorithm is $O(\lg n)$.
 
 It's possible to realize the tournament knock out sort now. We build a tournament tree from the elements
 to be sorted, then continuously extract the maximum. If we want to sort in monotonically increase order,
@@ -1100,9 +1100,9 @@ void tsort(Key* xs, int n) {
 }
 \end{lstlisting}
 
-This algorithm firstly takes $O(N)$ time to build the tournament tree, then performs $N$ pops to select
-the maximum elements so far left in the tree. Since each pop operation is bound to $O(\lg N)$, thus
-the total performance of tournament knock out sorting is $O(N \lg N)$.
+This algorithm firstly takes $O(n)$ time to build the tournament tree, then performs $n$ pops to select
+the maximum elements so far left in the tree. Since each pop operation is bound to $O(\lg n)$, thus
+the total performance of tournament knock out sorting is $O(n \lg n)$.
 
 \subsubsection{Refine the tournament knock out}
 \index{Tounament knock out!explict infinity}
@@ -1213,7 +1213,7 @@ fromList = build . (map wrap) where
 \end{lstlisting} %$
 
 When extracting the champion (the minimum) from the tournament tree, we need examine either the left child
-sub-tree or the right one has the same key, and recursively extract on that tree until arrive at the leaf
+sub-tree or the right one has the same key as the root, and recursively extract on that tree until arrive at the leaf
 node. Denote the left sub-tree of $T$ as $L$, right sub-tree as $R$, and $K$ as its key. We can define this popping
 algorithm as the following.
 
@@ -1221,7 +1221,7 @@ algorithm as the following.
 pop(T) =  \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  tree(\Phi, \infty, \Phi) & L = \Phi \land R = \Phi \\
+  tree(\phi, \infty, \phi) & L = \phi \land R = \phi \\
   tree(L', min(key(L'), key(R)), R) & K = key(L), L' = pop(L) \\
   tree(L, min(key(L), key(R')), R') & K = key(R), R' = pop(R)
   \end{array}
@@ -1250,13 +1250,13 @@ With these functions defined, tournament knock out sorting can be formalized by 
 sort(L) = sort'(build(L))
 \ee
 
-Where $sort'(T)$ continuously pops the minimum element to form a result list
+Where $sort'(T)$ continuously pops the minimum element to form a result tree
 
 \be
 sort'(T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & T = \Phi \lor key(T) = \infty \\
+  \phi & T = \phi \lor key(T) = \infty \\
   \{ top(T) \} \cup sort'(pop(T)) & otherwise
   \end{array}
 \right.
@@ -1276,7 +1276,7 @@ tsort = sort' . fromList where
     sort' t = (top t) : (sort' $ pop t)
 \end{lstlisting} %$
 
-And the auxiliary function \verb|only|, \verb|key|, \verb|wrap| accomplished with explicit infinity support are list
+And the auxiliary function \texttt{only}, \texttt{key}, \texttt{wrap} accomplished with explicit infinity support are list
 as the following.
 
 \lstset{language=Haskell}
@@ -1288,7 +1288,7 @@ wrap x = Br Empty (Only x) Empty
 
 \begin{Exercise}
   \begin{itemize}
-    \item Implement the helper function \verb|leaf()|, \verb|branch|, \verb|max()| \verb|lsleaf()|, and \verb|release()| to complete the imperative tournament tree program.
+    \item Implement the helper function \texttt{leaf()}, \texttt{branch}, \texttt{max()} \texttt{lsleaf()}, and \texttt{release()} to complete the imperative tournament tree program.
     \item Implement the imperative tournament tree in a programming language support GC (garbage collection).
     \item Why can our tournament tree knock out sort algorithm handle duplicated elements (elements with same value)? We say a sorting algorithm stable, if it keeps the original order of elements with same value. Is the tournament tree knock out sorting stable?
     \item Design an imperative tournament tree knock out sort algorithm, which satisfies the following:
@@ -1303,13 +1303,13 @@ wrap x = Br Empty (Only x) Empty
 
 \subsection{Final improvement by using heap sort}
 
-We manage improving the performance of selection based sorting to $O(N \lg N)$ by using tournament knock out.
+We manage improving the performance of selection based sorting to $O(n \lg n)$ by using tournament knock out.
 This is the limit of comparison based sort according to \cite{TAOCP}. However, there are still rooms for improvement.
 After sorting, there lefts a complete binary tree with all leaves and branches hold useless infinite values.
 This isn't space efficient at all. Can we release the nodes when popping?
 
-Another observation is that if there are $N$ elements to be sorted, we actually allocate about $2N$ tree nodes.
-$N$ for leaves and $N$ for branches. Is there any better way to halve the space usage?
+Another observation is that if there are $n$ elements to be sorted, we actually allocate about $2n$ tree nodes.
+$n$ for leaves and $n$ for branches. Is there any better way to halve the space usage?
 
 The final sorting structure described in equation \ref{eq:tsort} can be easily uniformed to a more general
 one if we treat the case that the tree is empty if its root holds infinity as key:
@@ -1318,7 +1318,7 @@ one if we treat the case that the tree is empty if its root holds infinity as ke
 sort'(T) = \left \{
   \begin{array}
   {r@{\quad:\quad}l}
-  \Phi & T = \Phi\\
+  \phi & T = \phi\\
   \{ top(T) \} \cup sort'(pop(T)) & otherwise
   \end{array}
 \right.
@@ -1327,8 +1327,8 @@ sort'(T) = \left \{
 This is exactly as same as the one of heap sort we gave in previous chapter.
 Heap always keeps the minimum (or the maximum) on the top, and provides fast pop operation.
 The binary heap by implicit array encodes the tree structure in array index, so there aren't
-any extra spaces allocated except for the $N$ array cells. The functional heaps,
-such as leftist heap and splay heap allocate $N$ nodes as well. We'll introduce more
+any extra spaces allocated except for the $n$ array cells. The functional heaps,
+such as leftist heap and splay heap allocate $n$ nodes as well. We'll introduce more
 heaps in next chapter which perform well in many aspects.
 
 \section{Short summary}

@@ -2,7 +2,7 @@ Elementary Algorithms
 
 Edition: 0.6180339887498949
 
-2014, July, 21
+2015, May, 27
 
 AlgoXY is a free book about elementary
 algorithms and data structures. This book doesn't only focus on an
@@ -18,10 +18,13 @@ The contents of the book are provided under GNU FDL and the source
 code is under GNU GPLv3.
 
 The PDF version can be downloaded from github:
-https://github.com/liuxinyu95/AlgoXY/blob/algoxy/preview/elementary-algorithms.pdf?raw=true
+https://github.com/liuxinyu95/AlgoXY/releases/download/v0.618030/elementary-algorithms.pdf
 
 This book is also available online at:
 https://sites.google.com/site/algoxy/home
+
+
+You can donate to support this book. Alipay: larryliuxinyu@qq.com
 
 --
 Larry LIU Xinyu
